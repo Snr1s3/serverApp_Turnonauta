@@ -12,7 +12,9 @@ async def handle_client(reader, writer):
     data = await reader.read(100)  # Read up to 100 bytes
     print(f"Received: {data.decode()} from {addr}")
 
-
+    data = data.decode().strip()
+    data = data.split(",")
+    print(f"Data: {data}")
     
     # Respond to the client
     writer.write(b"Data received!\n")
@@ -35,7 +37,7 @@ async def periodic_get_request():
                         print(f"Raw response data: {data}")
                         # Extract and print `id` and `nom` fields
                         for item in data:
-                            print(f"Raw item data: {item}")  # Debugging
+                            #print(f"Raw item data: {item}")  # Debugging
                             id_tournament = item.get('id_torneig')  # Ensure id_tournament is a string
                             nom = item.get('nom')
                             if id_tournament not in dict_torurnaments:
