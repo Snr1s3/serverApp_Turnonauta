@@ -25,7 +25,7 @@ async def handle_client(reader, writer):
         dict_torurnaments[tournament_id] = []  
 
     dict_torurnaments[tournament_id].append({"player_id": player_id, "writer": writer})
-    print(f"Updated tournaments: {dict_torurnaments[tournament_id][1]}")
+    print(f"Updated tournaments: {dict_torurnaments[tournament_id][0].get('player_id')}")
 
     writer.write(b"Registered for the tournament!\n")
     await writer.drain()
