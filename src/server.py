@@ -35,7 +35,8 @@ async def periodic_get_request():
                             id_tournament = item.get('id_torneig')  
                             nom = item.get('nom')
                             if id_tournament not in dict_torurnaments:
-                                dict_torurnaments[''+id_tournament] = {}
+                                id_tournament = str(id_tournament)
+                                dict_torurnaments[id_tournament] = {}
                             print(f"id: {id_tournament}, nom: {nom}")
                     else:
                         print(f"Failed to fetch data. Status: {response.status}")
