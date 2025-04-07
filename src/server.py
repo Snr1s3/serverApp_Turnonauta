@@ -34,12 +34,8 @@ async def periodic_get_request():
                         data = await response.json()
                         # Extract and print `id` and `nom` fields
                         for item in data:
-                            id_tournament = item.get('id_torneig')
-                            # Ensure the id is a string
-                            if not isinstance(id_tournament, str):
-                                id_tournament = str(id_tournament)
+                            id_tournament = str(item.get('id_torneig'))  # Ensure id_tournament is a string
                             nom = item.get('nom')
-                            dict_torurnaments.get(id_tournament)
                             if id_tournament not in dict_torurnaments:
                                 dict_torurnaments[id_tournament] = {}
                             print(f"id: {id_tournament}, nom: {nom}")
