@@ -12,7 +12,7 @@ async def handle_client(reader, writer):
     print(f"Received: {data.decode()} from {addr}")
     data = data.decode().strip()
     data = data.split(",")
-    data = data.replace("'", "") 
+    data = data.replace("\'", "") 
     data = data.replace("[", "") 
     data = data.replace("]", "") 
     print(f"Data: {data}")
