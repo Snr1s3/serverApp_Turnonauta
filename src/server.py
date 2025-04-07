@@ -34,7 +34,7 @@ async def periodic_get_request():
                         data = await response.json()
                         # Extract and print `id` and `nom` fields
                         for item in data:
-                            id_tournament = item.get('id_torneig').toString()
+                            id_tournament = item.get('id_torneig')
                             # Ensure the id is a string
                             if not isinstance(id_tournament, str):
                                 id_tournament = str(id_tournament)
