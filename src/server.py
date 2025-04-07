@@ -8,9 +8,11 @@ dict_torurnaments = {}
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
-    
+
     data = await reader.read(100)  # Read up to 100 bytes
     print(f"Received: {data.decode()} from {addr}")
+
+
     
     # Respond to the client
     writer.write(b"Data received!\n")
@@ -32,7 +34,10 @@ async def periodic_get_request():
                         data = await response.json()
                         # Extract and print `id` and `nom` fields
                         for item in data:
-                            id_tournament = item.get('id_torneig')
+                            id_tournament = item.get('id_torneig').toString()
+                            # Ensure the id is a string
+                            if not isinstance(id_tournament, str):
+                                id_tournament = str(id_tournament)
                             nom = item.get('nom')
                             dict_torurnaments.get(id_tournament)
                             if id_tournament not in dict_torurnaments:
