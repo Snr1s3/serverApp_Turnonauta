@@ -11,11 +11,13 @@ async def handle_client(reader, writer):
     data = await reader.read(100)
     print(f"Received: {data.decode()} from {addr}")
     # Decode and clean the data
-    data = data.decode().strip()
-    data = data.replace("\'", "").replace("[", "").replace("]", "")  # Clean unwanted characters
-    data = data.split(",")  # Split into a list after cleaning
-    
+    data = data.decode().strip()    
     print(f"Data: {data}")
+
+    dict_torurnaments[data] = { addr[0]: addr[1] }
+
+    for id_tournament, data in dict_torurnaments.items():
+        print(f"ID: {id_tournament}, Data: {data}")
     writer.write(b"Data received!\n")
     await writer.drain()
     
