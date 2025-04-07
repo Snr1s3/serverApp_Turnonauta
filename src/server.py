@@ -10,11 +10,10 @@ async def handle_client(reader, writer):
     print(f"Connection from {addr}")
     data = await reader.read(100)
     print(f"Received: {data.decode()} from {addr}")
-    # Decode and clean the data
     data = data.decode().strip()    
     print(f"Data: {data}")
     try:
-        tournament_id, player_id = data.split(":")  # Split the data into tournament ID and player ID
+        tournament_id, player_id = data.split(":") 
     except ValueError:
         writer.write(b"Invalid data format. Use 'tournament_id:player_id'.\n")
         await writer.drain()
@@ -22,17 +21,15 @@ async def handle_client(reader, writer):
         await writer.wait_closed()
         return
     
-    # Store the player in the dictionary under the tournament ID
     if tournament_id not in dict_torurnaments:
-        dict_torurnaments[tournament_id] = []  # Create a list for players if not exists
-    
-    # Add the player to the tournament
+        dict_torurnaments[tournament_id] = []  
+
     dict_torurnaments[tournament_id].append({"player_id": player_id, "writer": writer})
     print(f"Updated tournaments: {dict_torurnaments}")
-    
-    # Respond to the client
+
     writer.write(b"Registered for the tournament!\n")
     await writer.drain()
+
 async def periodic_get_request():
     url = "https://turnonauta.asegura.dev:8443/tournaments/active"  
     i = 0
@@ -48,7 +45,7 @@ async def periodic_get_request():
                             nom = item.get('nom')
                             if id_tournament not in dict_torurnaments:
                                 id_tournament = str(id_tournament)
-                                dict_torurnaments[id_tournament] = {}
+                                dict_torurnaments[id_tournament] = []
                             print(f"id: {id_tournament}, nom: {nom}")
                     else:
                         print(f"Failed to fetch data. Status: {response.status}")
