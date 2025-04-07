@@ -20,7 +20,6 @@ async def handle_client(reader, writer):
     
     writer.close()
     await writer.wait_closed()
-
 async def periodic_get_request():
     url = "https://turnonauta.asegura.dev:8443/tournaments/active"  
     i = 0
@@ -32,8 +31,11 @@ async def periodic_get_request():
                     if response.status == 200:
                         # Parse the response as JSON
                         data = await response.json()
+                        # Debugging: Print the raw data
+                        print(f"Raw response data: {data}")
                         # Extract and print `id` and `nom` fields
                         for item in data:
+                            print(f"Raw item data: {item}")  # Debugging
                             id_tournament = str(item.get('id_torneig'))  # Ensure id_tournament is a string
                             nom = item.get('nom')
                             if id_tournament not in dict_torurnaments:
@@ -44,12 +46,10 @@ async def periodic_get_request():
             except Exception as e:
                 print(f"Error during GET request: {e}")
         await asyncio.sleep(2)
-        i += 1  # Wait for 5 seconds before the next request
+        i += 1  # Wait for 2 seconds before the next request
     print("Finished periodic GET requests.")
-    for dict_torurnament in dict_torurnaments:
-        print(f"ID: {dict_torurnament}, Data: {dict_torurnaments[dict_torurnament]}")
-
-
+    for id_tournament, data in dict_torurnaments.items():
+        print(f"ID: {id_tournament}, Data: {data}")
 
 async def main():
     # Start the periodic GET request task
