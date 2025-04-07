@@ -36,7 +36,7 @@ async def periodic_get_request():
                         # Extract and print `id` and `nom` fields
                         for item in data:
                             print(f"Raw item data: {item}")  # Debugging
-                            id_tournament = ''+item.get('id_torneig')  # Ensure id_tournament is a string
+                            id_tournament = item.get('id_torneig')  # Ensure id_tournament is a string
                             nom = item.get('nom')
                             if id_tournament not in dict_torurnaments:
                                 dict_torurnaments[id_tournament] = {}
