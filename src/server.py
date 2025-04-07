@@ -10,11 +10,11 @@ async def handle_client(reader, writer):
     print(f"Connection from {addr}")
     data = await reader.read(100)
     print(f"Received: {data.decode()} from {addr}")
+    # Decode and clean the data
     data = data.decode().strip()
-    data = data.split(",")
-    data = data.replace("\'", "") 
-    data = data.replace("[", "") 
-    data = data.replace("]", "") 
+    data = data.replace("\'", "").replace("[", "").replace("]", "")  # Clean unwanted characters
+    data = data.split(",")  # Split into a list after cleaning
+    
     print(f"Data: {data}")
     writer.write(b"Data received!\n")
     await writer.drain()
