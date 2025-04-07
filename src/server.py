@@ -34,7 +34,7 @@ async def periodic_get_request():
                         # Parse the response as JSON
                         data = await response.json()
                         # Debugging: Print the raw data
-                        print(f"Raw response data: {data}")
+                        #print(f"Raw response data: {data}")
                         # Extract and print `id` and `nom` fields
                         for item in data:
                             #print(f"Raw item data: {item}")  # Debugging
