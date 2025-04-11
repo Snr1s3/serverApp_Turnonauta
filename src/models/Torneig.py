@@ -1,6 +1,7 @@
 class Torneig:
-    def __init__(self, id_torneig, players=None):
+    def __init__(self, id_torneig, num_jugadors, players=None):
         self.id_torneig = id_torneig
+        self.num_jugadors = num_jugadors
         self.players = players if players else []
 
     def add_player(self, jugador):
