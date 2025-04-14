@@ -2,6 +2,8 @@ class Jugador:
     def __init__(self, id_jugador, id_torneig, writer):
         self.id_jugador = id_jugador
         self.id_torneig = id_torneig
+        #nom
+        
         self.writer = writer
 
     async def send_message(self, message):
