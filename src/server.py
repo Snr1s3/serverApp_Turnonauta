@@ -83,7 +83,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
         # Notificar tots els jugadors del torneig
         player_names = [p.nom for p in players if p.id_jugador in tournament.players]
         notification = (
-            f"{'.'.join(player_names)}\n"
+            f"1.{'.'.join(player_names)}\n"
         )
         disconnected_players = []
         for p_id in tournament.players:
