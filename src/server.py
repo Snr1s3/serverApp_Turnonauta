@@ -77,8 +77,8 @@ async def register_player(tournament_id, player_id,player_name, writer):
 
         # Afegir jugador al torneig
         tournament.add_player(player_id)
-        writer.write(b"Registered for the tournament!\n")
-        await writer.drain()
+        #writer.write(b"Registered for the tournament!\n")
+        #await writer.drain()
 
         # Notificar tots els jugadors del torneig
         player_names = [p.nom for p in players if p.id_jugador in tournament.players]
