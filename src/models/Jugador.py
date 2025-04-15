@@ -1,9 +1,8 @@
 class Jugador:
-    def __init__(self, id_jugador, id_torneig, writer):
+    def __init__(self, id_jugador, id_torneig, player_name, writer):
         self.id_jugador = id_jugador
         self.id_torneig = id_torneig
-        #nom
-        
+        self.nom = player_name
         self.writer = writer
 
     async def send_message(self, message):
@@ -15,4 +14,4 @@ class Jugador:
     
 
     def __str__(self):
-        return f"Jugador(id_jugador={self.id_jugador}, id_torneig={self.id_torneig})"
+        return f"Jugador(id_jugador={self.id_jugador}, id_torneig={self.id_torneig}, nom={self.nom})"

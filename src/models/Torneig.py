@@ -1,13 +1,16 @@
 class Torneig:
-    def __init__(self, id_torneig, num_jugadors, players=None):
-        self.id_torneig = id_torneig
-        self.num_jugadors = num_jugadors
-        self.players = players if players else []
 
-    def add_player(self, jugador):
-        if any(player.id_jugador == jugador.id_jugador for player in self.players):
-            raise ValueError(f"Player with ID {jugador.id_jugador} is already in the tournament.")
-        self.players.append(jugador)
+    def __init__(self, id_torneig, max_players):
+        self.id_torneig = id_torneig
+        self.max_players = max_players
+        self.players = []
+
+    def add_player(self, player_id):
+        if len(self.players) >= self.max_players:
+            raise ValueError("E.Tournament is full.")
+        if player_id in self.players:
+            raise ValueError("E.Player is already registered in this tournament.")
+        self.players.append(player_id)
 
     def __str__(self):
         return f"Torneig(id_torneig={self.id_torneig}, players={[str(player) for player in self.players]})"
