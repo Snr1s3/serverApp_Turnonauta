@@ -167,7 +167,9 @@ async def check_connections_and_notify():
         for tournament_id, tournament in dict_tournaments.items():
             # Get the list of player names in the tournament
             player_names = [p.nom for p in players if p.id_jugador in tournament.players]
-            notification = f"Updated player list: {', '.join(player_names)}\n"
+            notification = (
+                f"1.{'.'.join(player_names)}\n"
+            )
 
             disconnected_players = []
             for p_id in tournament.players:
