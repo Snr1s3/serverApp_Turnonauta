@@ -152,35 +152,46 @@ def print_tournaments():
     print("\nCurrent Tournaments:")
     for tournament in dict_tournaments.values():
         print(f"Tournament: {tournament.id_torneig}")
-        for player in tournament.players:
-            print(f"  Player: {player.id_jugador}")
-
+        for player_id in tournament.players:
+            print(f"  Player ID: {player_id}")
 
 async def check_connections_and_notify():
     """
-    Periodically checks connections and notifies players.
+    Periodically checks the connection with all players and sends an updated list
+    of players in each tournament to all connected players.
     """
     while True:
-        for tournament in dict_tournaments.values():
+        for tournament_id, tournament in dict_tournaments.items():
+            # Get the list of player names in the tournament
+            player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+            notification = (
+                f"1.{'.'.join(player_names)}\n"
+            )
+
             disconnected_players = []
-            for player in tournament.players:
-                try:
-                    player.writer.write(b"KEEP_ALIVE\n")
-                    await player.writer.drain()
-                except (BrokenPipeError, ConnectionResetError):
-                    print(f"Connection lost with player {player.id_jugador}. Removing from tournament.")
-                    disconnected_players.append(player)
+            for p_id in tournament.players:
+                p = next((pl for pl in players if pl.id_jugador == p_id), None)
+                if p:
+                    try:
+                        # Send the updated player list to the player
+                        p.writer.write(notification.encode())
+                        await p.writer.drain()
+                    except ConnectionResetError:
+                        # Handle disconnected players
+                        print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
+                        disconnected_players.append(p_id)
 
-            # Remove disconnected players
-            for player in disconnected_players:
-                tournament.players.remove(player)
+            # Remove disconnected players from the tournament
+            for p_id in disconnected_players:
+                tournament.players.remove(p_id)
 
-        await asyncio.sleep(10)  # Check every 10 seconds
-
+        # Wait for 2 seconds before the next check
+        await asyncio.sleep(2)
 
 async def main():
     """
     Main entry point for the server.
+    Starts the server, periodic GET request, and connection checking tasks.
     """
     server = await asyncio.start_server(handle_client, HOST, PORT)
     addr = server.sockets[0].getsockname()
@@ -192,7 +203,6 @@ async def main():
 
     async with server:
         await server.serve_forever()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
