@@ -18,7 +18,6 @@ async def handle_client(reader, writer):
     """
     Handles incoming client connections.
     """
-    periodic_get_request()
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
 
@@ -79,6 +78,7 @@ async def register_player(tournament_id, player_id, player_name, writer):
     player = Jugador(player_id, tournament_id, writer)
     try:
         tournament.add_player(player)
+        players.append(player)  # Add the player to the global players list
         writer.write(b"Registered for the tournament!\n")
         await writer.drain()
 
@@ -97,6 +97,7 @@ async def register_player(tournament_id, player_id, player_name, writer):
         # Remove disconnected players
         for p in disconnected_players:
             tournament.players.remove(p)
+            players.remove(p)  # Remove from the global players list
 
         print_tournaments()
     except ValueError as e:
@@ -130,20 +131,24 @@ async def periodic_get_request():
     Periodically fetches active tournaments from the server.
     """
     url = "https://turnonauta.asegura.dev:8443/tournaments/active"
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    for item in data:
-                        tournament_id = str(item.get('id_torneig'))
-                        num_players = item.get('num_jugadors')
-                        create_tournament(tournament_id, num_players)
-                        print(f"id: {tournament_id}, max players: {num_players}")
-                else:
-                    print(f"Failed to fetch data. Status: {response.status}")
-        except Exception as e:
-            print(f"Error during GET request: {e}")
+    while True:
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        for item in data:
+                            tournament_id = str(item.get('id_torneig'))
+                            num_players = item.get('num_jugadors')
+                            create_tournament(tournament_id, num_players)
+                            print(f"id: {tournament_id}, max players: {num_players}")
+                    else:
+                        print(f"Failed to fetch data. Status: {response.status}")
+            except Exception as e:
+                print(f"Error during GET request: {e}")
+        
+        # Wait for 30 seconds before the next request
+        await asyncio.sleep(30)
 
 
 def print_tournaments():
@@ -158,33 +163,24 @@ def print_tournaments():
 
 async def check_connections_and_notify():
     """
-    Periodically checks the connection with all players and sends an updated list
-    of players in each tournament to all connected players.
+    Periodically checks the connection with all players and removes disconnected players.
     """
     while True:
         for tournament_id, tournament in dict_tournaments.items():
-            # Get the list of player names in the tournament
-            player_names = [p.nom for p in players if p.id_jugador in tournament.players]
-            notification = (
-                f"1.{'.'.join(player_names)}\n"
-            )
-
             disconnected_players = []
-            for p_id in tournament.players:
-                p = next((pl for pl in players if pl.id_jugador == p_id), None)
-                if p:
-                    try:
-                        # Send the updated player list to the player
-                        p.writer.write(notification.encode())
-                        await p.writer.drain()
-                    except ConnectionResetError:
-                        # Handle disconnected players
-                        print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
-                        disconnected_players.append(p_id)
+            for player in tournament.players:
+                try:
+                    # Send a keep-alive message to check the connection
+                    player.writer.write(b"KEEP_ALIVE\n")
+                    await player.writer.drain()
+                except (BrokenPipeError, ConnectionResetError):
+                    print(f"Connection lost with player {player.id_jugador}. Removing from tournament.")
+                    disconnected_players.append(player)
 
-            # Remove disconnected players from the tournament
-            for p_id in disconnected_players:
-                tournament.players.remove(p_id)
+            # Remove disconnected players
+            for player in disconnected_players:
+                tournament.players.remove(player)
+                players.remove(player)  # Remove from the global players list
 
         # Wait for 2 seconds before the next check
         await asyncio.sleep(2)
