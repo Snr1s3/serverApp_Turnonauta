@@ -168,20 +168,29 @@ async def check_connections_and_notify():
     """
     while True:
         for tournament_id, tournament in dict_tournaments.items():
-            disconnected_players = []
-            for player in tournament.players:
-                try:
-                    # Send a keep-alive message to check the connection
-                    player.writer.write(b"KEEP_ALIVE\n")
-                    await player.writer.drain()
-                except (BrokenPipeError, ConnectionResetError):
-                    print(f"Connection lost with player {player.id_jugador}. Removing from tournament.")
-                    disconnected_players.append(player)
+            # Get the list of player names in the tournament
+            player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+            notification = (
+                f"1.{'.'.join(player_names)}\n"
+            )
 
-            # Remove disconnected players
-            for player in disconnected_players:
-                tournament.players.remove(player)
-                players.remove(player)  # Remove from the global players list
+            disconnected_players = []
+            for p_id in tournament.players:
+                p = next((pl for pl in players if pl.id_jugador == p_id), None)
+                if p:
+                    try:
+                        # Send the updated player list to the player
+                        p.writer.write(notification.encode())
+                        await p.writer.drain()
+                    except ConnectionResetError:
+                        # Handle disconnected players
+                        print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
+                        disconnected_players.append(p_id)
+
+            # Remove disconnected players from the tournament
+            for p in disconnected_players:
+                tournament.players.remove(p.id_jugador)
+                players.remove(p)
 
         # Wait for 2 seconds before the next check
         await asyncio.sleep(2)
