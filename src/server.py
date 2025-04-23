@@ -18,6 +18,7 @@ async def handle_client(reader, writer):
     """
     Handles incoming client connections.
     """
+    periodic_get_request()
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
 
