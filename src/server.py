@@ -75,7 +75,8 @@ async def register_player(tournament_id, player_id, player_name, writer):
         return
 
     tournament = dict_tournaments[tournament_id]
-    player = Jugador(player_id, tournament_id, writer)
+    # Ensure all required arguments for Jugador are passed
+    player = Jugador(player_id, tournament_id, player_name, writer)
     try:
         tournament.add_player(player)
         players.append(player)  # Add the player to the global players list
