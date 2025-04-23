@@ -75,17 +75,14 @@ async def register_player(tournament_id, player_id, player_name, writer):
         return
 
     tournament = dict_tournaments[tournament_id]
-    # Ensure all required arguments for Jugador are passed
-    player = Jugador(player_id, tournament_id, player_name, writer)
+    player = Jugador(player_id, tournament_id, writer)
     try:
         tournament.add_player(player)
-        players.append(player)  # Add the player to the global players list
+        writer.write(b"Registered for the tournament!\n")
+        await writer.drain()
 
         # Notify all players in the tournament
-        player_names = [p.nom for p in players if p.id_jugador in tournament.players]
-        notification = (
-            f"1.{'.'.join(player_names)}\n"
-        )
+        notification = f"Player {player_name} has joined the tournament {tournament_id}.\n"
         disconnected_players = []
         for p in tournament.players:
             if p.writer != writer:  # Avoid notifying the player who just joined
@@ -99,12 +96,12 @@ async def register_player(tournament_id, player_id, player_name, writer):
         # Remove disconnected players
         for p in disconnected_players:
             tournament.players.remove(p)
-            players.remove(p)  # Remove from the global players list
 
         print_tournaments()
     except ValueError as e:
         writer.write(f"{str(e)}\n".encode())
         await writer.drain()
+
 
 
 def is_player_registered(player_id):
