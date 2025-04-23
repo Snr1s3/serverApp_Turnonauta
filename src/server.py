@@ -80,11 +80,12 @@ async def register_player(tournament_id, player_id, player_name, writer):
     try:
         tournament.add_player(player)
         players.append(player)  # Add the player to the global players list
-        writer.write(b"Registered for the tournament!\n")
-        await writer.drain()
 
         # Notify all players in the tournament
-        notification = f"Player {player_name} has joined the tournament {tournament_id}.\n"
+        player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+        notification = (
+            f"1.{'.'.join(player_names)}\n"
+        )
         disconnected_players = []
         for p in tournament.players:
             if p.writer != writer:  # Avoid notifying the player who just joined
