@@ -2,7 +2,7 @@ import asyncio
 import argparse
 
 HOST = '127.0.0.1'
-PORT = 8444    
+PORT = 8445    
 
 async def client(client_id):
     reader, writer = await asyncio.open_connection(HOST, PORT)
@@ -19,11 +19,11 @@ async def client(client_id):
             if not response:
                 print("Server closed the connection.")
                 break
-            print(f"Received: {response.decode()}")
-
+            print(f"Received: {response.decode()}\n")
+            print("Sending keep-alive message...")
             # Send a keep-alive message every 10 seconds
             await asyncio.sleep(10)
-            writer.write(b"KEEP_ALIVE\n")
+            #writer.write(b"KEEP_ALIVE\n")
             await writer.drain()
     except asyncio.CancelledError:
         print("Connection closed by the client.")

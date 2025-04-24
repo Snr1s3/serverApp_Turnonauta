@@ -11,6 +11,7 @@ class Torneig:
         if player in self.players:
             raise ValueError("E.Player is already registered in this tournament.")
         self.players.append(player)
+            
 
     def remove_player(self, player):
         if player in self.players:
