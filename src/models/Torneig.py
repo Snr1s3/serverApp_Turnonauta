@@ -4,7 +4,6 @@ class Torneig:
         self.id_torneig = id_torneig
         self.max_players = max_players
         self.players = []
-        self.host 
 
     def add_player(self, player):
         if len(self.players) >= self.max_players:
