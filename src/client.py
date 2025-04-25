@@ -2,7 +2,7 @@ import asyncio
 import argparse
 
 HOST = '127.0.0.1'
-PORT = 8445    
+PORT = 8444 
 
 async def client(client_id):
     reader, writer = await asyncio.open_connection(HOST, PORT)

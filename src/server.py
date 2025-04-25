@@ -1,108 +1,138 @@
 import asyncio
-import aiohttp
-from models.Torneig import Torneig
+import aiohttp 
 from models.Jugador import Jugador
+from models.Torneig import Torneig
+
 # Server configuration
 HOST = '0.0.0.0'
-PORT = 8445
+PORT = 8444
+
+# Dictionary to store tournaments
 dict_tournaments = {}
+
+# List to store all players
 players = []
 
 
-def create_tournament(tournament_id, max_players):
-    """
-    Creates a new tournament and adds it to the global dictionary.
-    """
-    if tournament_id in dict_tournaments:
-        print(f"Tournament {tournament_id} already exists.")
-        return False  # Tournament already exists
-
-    # Add the new tournament to the dictionary
-    dict_tournaments[tournament_id] = Torneig(tournament_id, max_players)
-
-    
-    #print(f"Tournament {tournament_id} created with max players: {max_players}")
-    return True
-
 async def handle_client(reader, writer):
     """
-    Handles incoming client connections.
+    Connexio client.
     """
-    await periodic_get_request()
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
 
     try:
-        while True:
-            data = await reader.read(100)
-            if not data:
-                print(f"Client {addr} disconnected.")
-                break
+        # Llegir el missatge del client
+        data = await reader.read(100)
+        message = data.decode().strip()
+        print(f"Received: {message} from {addr}")
 
-            message = data.decode().strip()
-            print(f"Received: {message} from {addr}")
+        # Parsejar el missatge
+        codi, tournament_id, player_id, player_name = parse_client_message(message)
+
+        # Registrar el jugador
+        await register_player(tournament_id, player_id,player_name, writer)
+
+    except ValueError as e:
+        
+        writer.write(f"{str(e)}\n".encode())
+        await writer.drain()
+
+
+def parse_client_message(message):
+    """
+    Parsejar el missatge del client.
+    """
+    try:
+        codi, tournament_id, player_id, player_name = message.split(".")
+        return codi, tournament_id, player_id, player_name
+    except ValueError:
+        raise ValueError("Invalid data format. Use 'codi.tournament_id.player_id.player_name'.")
+
+
+async def register_player(tournament_id, player_id,player_name, writer):
+    # Verificar si el torneig és vàlid
+    if tournament_id not in dict_tournaments:
+        writer.write(b"Invalid Tournament.\n")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+        return
+
+    # Verificar si el jugador ja està registrat
+    if is_player_registered(player_id):
+        writer.write(b"Player ID already registered in another tournament.\n")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+        return
+
+    # Agafar el torneig
+    tournament = dict_tournaments[tournament_id]
+
+    try:
+        # Afegir jugador a la llista de jugadors
+        if not any(p.id_jugador == player_id for p in players):
+            players.append(Jugador(player_id, tournament_id, player_name, writer))
+
+        # Afegir jugador al torneig
+        tournament.add_player(player_id)
+        #writer.write(b"Registered for the tournament!\n")
+        #await writer.drain()
+
+        # Notificar tots els jugadors del torneig
+        player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+        notification = (
+            f"1.{'.'.join(player_names)}\n"
+        )
+        disconnected_players = []
+        for p_id in tournament.players:
+            p = next((pl for pl in players if pl.id_jugador == p_id), None)
             try:
-                if(message.split(".")[0] == "0"): 
-                    codi, id_torneig, id_jugador, nom = message.split(".")
-                    player = Jugador(id_jugador, id_torneig, nom, writer)
-                    dict_tournaments[id_torneig].add_player(player)
-                    players.append(player)
-                    for tournament in dict_tournaments.values():
-                        print(f"Tournament ID: {tournament.id_torneig}, Max Players: {tournament.max_players}")
-                        for p in tournament.players:
-                            print(f"Player ID: {p.id_jugador}, Name: {p.nom}")
-            except ValueError:
-                writer.write(b"Invalid message format. Use 'id_jugador.id_torneig.nom'\n")
-                await writer.drain()
-                continue
-            writer.write(f"Echo: {message}\n".encode())
-            await writer.drain()
-    except asyncio.CancelledError:
-        print(f"Connection with {addr} was cancelled.")
-    finally:
-        print(f"Closing connection with {addr}")
+                p.writer.write(notification.encode())
+                await p.writer.drain()
+            except ConnectionResetError:
+                print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
+                disconnected_players.append(p_id)
+
+        # Eliminar desconnectats
+        for p_id in disconnected_players:
+            tournament.players.remove(p_id)
+
+        print_tournaments()
+    except ValueError as e:
+        writer.write(f"{str(e)}\n".encode())
+        await writer.drain()
         writer.close()
         await writer.wait_closed()
 
 
-async def notify_players():
+def is_player_registered(player_id):
     """
-    Periodically sends a message to all players with the list of players in their tournament.
+    Verificar si el jugador ja està registrat.
     """
-    while True:
-        for tournament_id, tournament in dict_tournaments.items():
-            # Get the list of player names in the tournament
-            #print(f"Notifying players in tournament {tournament_id}")
-            player_names = [p.nom for p in tournament.players]
-            print (player_names)
-            notification = f"1.{'.'.join(player_names)}\n"
-            print(f"Notification: {notification}")
-            disconnected_players = []
-            for player in tournament.players:
-                try:
-                    # Send the updated player list to the player
-                    player.writer.write(notification.encode())
-                    await player.writer.drain()
-                except (BrokenPipeError, ConnectionResetError):
-                    # Handle disconnected players
-                    print(f"Connection lost with player {player.id_jugador}. Removing from tournament.")
-                    disconnected_players.append(player)
+    for tournament in dict_tournaments.values():
+        if player_id in tournament.players:
+            return True
+    return False
 
-            # Remove disconnected players from the tournament
-            for player in disconnected_players:
-                tournament.players.remove(player)
-                players.remove(player)  # Remove from the global players list
 
-        # Wait for 2 seconds before the next check
-        await asyncio.sleep(2)
+def create_tournament(tournament_id, num_players):
+    """
+    Crear un torneig.
+    """
+    if tournament_id in dict_tournaments:
+        return False
+    dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
+    return True
+
 
 async def periodic_get_request():
     """
-    Periodically fetches active tournaments from the server.
+    Gets de tornejos actius.
     """
     url = "https://turnonauta.asegura.dev:8443/tournaments/active"
     async with aiohttp.ClientSession() as session:
-        print("Fetching active tournaments...")
         try:
             async with session.get(url) as response:
                 if response.status == 200:
@@ -116,16 +146,64 @@ async def periodic_get_request():
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:
             print(f"Error during GET request: {e}")
+
+
+def print_tournaments():
+    """
+    Prints tornejos
+    """
+    print("\nCurrent Tournaments:")
+    for tournament in dict_tournaments.values():
+        print(f"Tournament: {tournament.id_torneig}")
+        for player_id in tournament.players:
+            print(f"  Player ID: {player_id}")
+
+async def check_connections_and_notify():
+    """
+    Periodically checks the connection with all players and sends an updated list
+    of players in each tournament to all connected players.
+    """
+    while True:
+        for tournament_id, tournament in dict_tournaments.items():
+            # Get the list of player names in the tournament
+            player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+            notification = (
+                f"1.{'.'.join(player_names)}\n"
+            )
+
+            disconnected_players = []
+            for p_id in tournament.players:
+                p = next((pl for pl in players if pl.id_jugador == p_id), None)
+                if p:
+                    try:
+                        # Send the updated player list to the player
+                        p.writer.write(notification.encode())
+                        await p.writer.drain()
+                    except ConnectionResetError:
+                        # Handle disconnected players
+                        print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
+                        disconnected_players.append(p_id)
+
+            # Remove disconnected players from the tournament
+            for p_id in disconnected_players:
+                tournament.players.remove(p_id)
+
+        # Wait for 2 seconds before the next check
+        await asyncio.sleep(2)
+
 async def main():
     """
     Main entry point for the server.
+    Starts the server, periodic GET request, and connection checking tasks.
     """
     server = await asyncio.start_server(handle_client, HOST, PORT)
     addr = server.sockets[0].getsockname()
     print(f"Server running on {addr}")
-    
-    await periodic_get_request()
-    asyncio.create_task(notify_players())
+
+    # Start periodic tasks
+    asyncio.create_task(periodic_get_request())
+    asyncio.create_task(check_connections_and_notify())
+
     async with server:
         await server.serve_forever()
 
