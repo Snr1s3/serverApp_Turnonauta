@@ -45,6 +45,7 @@ def parse_client_message(message):
     """
     try:
         codi = message.split(".")[0]
+        if codi == "0":
             codi, tournament_id, player_id, player_name = message.split(".")
             return codi, tournament_id, player_id, player_name
     except ValueError:
