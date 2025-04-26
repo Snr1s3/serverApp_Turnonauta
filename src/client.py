@@ -1,7 +1,7 @@
 import asyncio
 import argparse
 
-HOST = '127.0.0.1'
+HOST = '52.20.160.197'
 PORT = 8444    
 
 async def client(client_id):

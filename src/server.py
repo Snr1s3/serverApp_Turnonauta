@@ -44,8 +44,10 @@ def parse_client_message(message):
     Parsejar el missatge del client.
     """
     try:
-        codi, tournament_id, player_id, player_name = message.split(".")
-        return codi, tournament_id, player_id, player_name
+        codi = message.split(".")[0]
+        if codi == "1":
+            codi, tournament_id, player_id, player_name = message.split(".")
+            return codi, tournament_id, player_id, player_name
     except ValueError:
         raise ValueError("Invalid data format. Use 'codi.tournament_id.player_id.player_name'.")
 
@@ -187,6 +189,7 @@ async def check_connections_and_notify():
             # Remove disconnected players from the tournament
             for p_id in disconnected_players:
                 tournament.players.remove(p_id)
+                players[:] = [p for p in players if p.id_jugador != p_id]
 
         # Wait for 2 seconds before the next check
         await asyncio.sleep(2)
