@@ -72,6 +72,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
     # Agafar el torneig
     tournament = dict_tournaments[tournament_id]
 
+    delete_puntuacions_tournament(tournament_id)
     try:
         # Afegir jugador a la llista de jugadors
         if not any(p.id_jugador == player_id for p in players):
@@ -91,6 +92,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
         for p_id in tournament.players:
             p = next((pl for pl in players if pl.id_jugador == p_id), None)
             try:
+                asyncio.run(post_add_puntuacio(p.id_jugador,p.id_torneig))
                 p.writer.write(notification.encode())
                 await p.writer.drain()
             except ConnectionResetError:
@@ -128,7 +130,7 @@ def create_tournament(tournament_id, num_players):
     dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
     return True
 
-async def post_to_server():
+async def post_add_puntuacio(user_id, tournament_id):
     """
     Perform a POST request to the server to add a new tournament.
     """
@@ -137,8 +139,8 @@ async def post_to_server():
         "id_torneig": 2,
         "id_usuari": 2,
         "victories": 50,
-        "derrotes": 50,
-        "punts": 50
+        "derrotes": 0,
+        "punts": 0
     }
 
     async with aiohttp.ClientSession() as session:
@@ -152,6 +154,24 @@ async def post_to_server():
                     print(f"Failed: {response.status}, {error}")
         except Exception as e:
             print(f"Error during POST request: {e}")
+
+async def delete_puntuacions_tournament(tournament_id):
+    """
+    Perform a DELETE request to the server to remove all puntuacions for a tournament.
+    """
+    url = f"{BASE_URL}puntuacions/delete_puntuacions_tournament/{tournament_id}"
+
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.delete(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    print(f"Success: {data}")
+                else:
+                    error = await response.json()
+                    print(f"Failed: {response.status}, {error}")
+        except Exception as e:
+            print(f"Error during DELETE request: {e}")
 
 async def periodic_get_request():
     """
@@ -234,6 +254,4 @@ async def main():
         await server.serve_forever()
 
 if __name__ == "__main__":
-
-    asyncio.run(post_to_server())
     asyncio.run(main())
