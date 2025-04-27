@@ -174,6 +174,24 @@ async def delete_puntuacions_tournament(tournament_id):
     except Exception as e:
         print(f"Error during DELETE request: {e}")
 
+async def delete_puntuacions_user(user_id, tournament_id):
+    """
+    Perform a DELETE request to the server to remove all puntuacions for a user in a tournament.
+    """
+    global shared_session
+    url = f"{BASE_URL}puntuacions/delete_by_user/{user_id}/{tournament_id}"
+
+    try:
+        async with shared_session.delete(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                print(f"Success: {data}")
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during DELETE request: {e}")
+
 async def periodic_get_request():
     """
     Gets de tornejos actius.
@@ -229,6 +247,7 @@ async def check_connections_and_notify():
                     except ConnectionResetError:
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
+                        await delete_puntuacions_user(p.id_jugador, tournament_id)
                         disconnected_players.append(p_id)
 
             # Remove disconnected players from the tournament
