@@ -136,8 +136,8 @@ async def post_add_puntuacio(user_id, tournament_id):
     """
     url = BASE_URL + "puntuacions/add"
     payload = {
-        "id_torneig": 2,
-        "id_usuari": 2,
+        "id_torneig": tournament_id,
+        "id_usuari": user_id,
         "victories": 50,
         "derrotes": 0,
         "punts": 0
@@ -146,7 +146,7 @@ async def post_add_puntuacio(user_id, tournament_id):
     async with aiohttp.ClientSession() as session:
         try:
             async with session.post(url, json=payload) as response:
-                if response.status == 201:
+                if response.status in (200, 201):
                     data = await response.json()
                     print(f"Success: {data}")
                 else:
