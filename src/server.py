@@ -7,6 +7,7 @@ from models.Torneig import Torneig
 HOST = '0.0.0.0'
 PORT = 8444
 BASE_URL = "https://turnonauta.asegura.dev:8443/"
+shared_session = None
 # Dictionary to store tournaments
 dict_tournaments = {}
 
@@ -132,8 +133,9 @@ def create_tournament(tournament_id, num_players):
 
 async def post_add_puntuacio(user_id, tournament_id):
     """
-    Perform a POST request to the server to add a new tournament.
+    Perform a POST request to the server to add a new puntuacio.
     """
+    global shared_session
     url = BASE_URL + "puntuacions/add"
     payload = {
         "id_torneig": tournament_id,
@@ -143,35 +145,34 @@ async def post_add_puntuacio(user_id, tournament_id):
         "punts": 0
     }
 
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(url, json=payload) as response:
-                if response.status in (200, 201):
-                    data = await response.json()
-                    print(f"Success: {data}")
-                else:
-                    error = await response.json()
-                    print(f"Failed: {response.status}, {error}")
-        except Exception as e:
-            print(f"Error during POST request: {e}")
+    try:
+        async with shared_session.post(url, json=payload) as response:
+            if response.status in (200, 201):
+                data = await response.json()
+                print(f"Success: {data}")
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during POST request: {e}")
 
 async def delete_puntuacions_tournament(tournament_id):
     """
     Perform a DELETE request to the server to remove all puntuacions for a tournament.
     """
+    global shared_session
     url = f"{BASE_URL}puntuacions/delete_puntuacions_tournament/{tournament_id}"
 
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.delete(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    print(f"Success: {data}")
-                else:
-                    error = await response.json()
-                    print(f"Failed: {response.status}, {error}")
-        except Exception as e:
-            print(f"Error during DELETE request: {e}")
+    try:
+        async with shared_session.delete(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                print(f"Success: {data}")
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during DELETE request: {e}")
 
 async def periodic_get_request():
     """
