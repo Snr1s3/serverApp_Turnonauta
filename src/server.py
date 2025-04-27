@@ -244,15 +244,21 @@ async def main():
     Main entry point for the server.
     Starts the server, periodic GET request, and connection checking tasks.
     """
-    server = await asyncio.start_server(handle_client, HOST, PORT)
-    addr = server.sockets[0].getsockname()
-    print(f"Server running on {addr}")
-    # Start periodic tasks
-    asyncio.create_task(periodic_get_request())
-    asyncio.create_task(check_connections_and_notify())
+    global shared_session
+    shared_session = aiohttp.ClientSession()  # Initialize the shared session
 
-    async with server:
-        await server.serve_forever()
+    try:
+        server = await asyncio.start_server(handle_client, HOST, PORT)
+        addr = server.sockets[0].getsockname()
+        print(f"Server running on {addr}")
+        # Start periodic tasks
+        asyncio.create_task(periodic_get_request())
+        asyncio.create_task(check_connections_and_notify())
+
+        async with server:
+            await server.serve_forever()
+    finally:
+        await shared_session.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
