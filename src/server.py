@@ -6,7 +6,7 @@ from models.Torneig import Torneig
 # Server configuration
 HOST = '0.0.0.0'
 PORT = 8444
-
+BASE_URL = "https://turnonauta.asegura.dev:8443/"
 # Dictionary to store tournaments
 dict_tournaments = {}
 
@@ -128,12 +128,36 @@ def create_tournament(tournament_id, num_players):
     dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
     return True
 
+async def post_to_server():
+    """
+    Perform a POST request to the server to add a new tournament.
+    """
+    url = BASE_URL + "/puntuacions/add"
+    payload = {
+        "id_torneig": 2,
+        "id_usuari": 2,
+        "victories": 50,
+        "derrotes": 50,
+        "punts": 50
+    }
+
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, json=payload) as response:
+                if response.status == 201:
+                    data = await response.json()
+                    print(f"Success: {data}")
+                else:
+                    error = await response.json()
+                    print(f"Failed: {response.status}, {error}")
+        except Exception as e:
+            print(f"Error during POST request: {e}")
 
 async def periodic_get_request():
     """
     Gets de tornejos actius.
     """
-    url = "https://turnonauta.asegura.dev:8443/tournaments/active"
+    url = BASE_URL + "tournaments/active"
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(url) as response:
@@ -202,7 +226,7 @@ async def main():
     server = await asyncio.start_server(handle_client, HOST, PORT)
     addr = server.sockets[0].getsockname()
     print(f"Server running on {addr}")
-
+    asyncio.run(post_to_server())
     # Start periodic tasks
     asyncio.create_task(periodic_get_request())
     asyncio.create_task(check_connections_and_notify())
