@@ -72,7 +72,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
     # Agafar el torneig
     tournament = dict_tournaments[tournament_id]
 
-    delete_puntuacions_tournament(tournament_id)
+    asyncio.run(delete_puntuacions_tournament(tournament_id))
     try:
         # Afegir jugador a la llista de jugadors
         if not any(p.id_jugador == player_id for p in players):
