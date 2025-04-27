@@ -132,7 +132,7 @@ async def post_to_server():
     """
     Perform a POST request to the server to add a new tournament.
     """
-    url = BASE_URL + "/puntuacions/add"
+    url = BASE_URL + "puntuacions/add"
     payload = {
         "id_torneig": 2,
         "id_usuari": 2,
