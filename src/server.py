@@ -72,7 +72,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
     # Agafar el torneig
     tournament = dict_tournaments[tournament_id]
 
-    asyncio.run(delete_puntuacions_tournament(tournament_id))
+    await delete_puntuacions_tournament(tournament_id)
     try:
         # Afegir jugador a la llista de jugadors
         if not any(p.id_jugador == player_id for p in players):
@@ -92,7 +92,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
         for p_id in tournament.players:
             p = next((pl for pl in players if pl.id_jugador == p_id), None)
             try:
-                asyncio.run(post_add_puntuacio(p.id_jugador,p.id_torneig))
+                await post_add_puntuacio(p.id_jugador,p.id_torneig)
                 p.writer.write(notification.encode())
                 await p.writer.drain()
             except ConnectionResetError:
