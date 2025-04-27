@@ -226,7 +226,6 @@ async def main():
     server = await asyncio.start_server(handle_client, HOST, PORT)
     addr = server.sockets[0].getsockname()
     print(f"Server running on {addr}")
-    asyncio.run(post_to_server())
     # Start periodic tasks
     asyncio.create_task(periodic_get_request())
     asyncio.create_task(check_connections_and_notify())
@@ -235,4 +234,6 @@ async def main():
         await server.serve_forever()
 
 if __name__ == "__main__":
+
+    asyncio.run(post_to_server())
     asyncio.run(main())
