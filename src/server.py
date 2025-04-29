@@ -2,10 +2,16 @@ import asyncio
 import aiohttp 
 from models.Jugador import Jugador
 from models.Torneig import Torneig
-
+from api_connections import (
+    post_add_puntuacio,
+    delete_puntuacions_tournament,
+    delete_puntuacions_user,
+    periodic_get_request,
+)
 # Server configuration
 HOST = '0.0.0.0'
 PORT = 8444
+shared_session = None
 
 # Dictionary to store tournaments
 dict_tournaments = {}
@@ -44,8 +50,10 @@ def parse_client_message(message):
     Parsejar el missatge del client.
     """
     try:
-        codi, tournament_id, player_id, player_name = message.split(".")
-        return codi, tournament_id, player_id, player_name
+        codi = message.split(".")[0]
+        if codi == "0":
+            codi, tournament_id, player_id, player_name = message.split(".")
+            return codi, tournament_id, player_id, player_name
     except ValueError:
         raise ValueError("Invalid data format. Use 'codi.tournament_id.player_id.player_name'.")
 
@@ -64,6 +72,7 @@ async def register_player(tournament_id, player_id, player_name, writer):
     # Get the tournament
     tournament = dict_tournaments[tournament_id]
 
+    await delete_puntuacions_tournament(tournament_id)
     try:
         # Add the player to the global players list
         if not any(p.id_jugador == player_id for p in players):
@@ -101,28 +110,6 @@ def create_tournament(tournament_id, num_players):
         return False
     dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
     return True
-
-
-async def periodic_get_request():
-    """
-    Gets de tornejos actius.
-    """
-    url = "https://turnonauta.asegura.dev:8443/tournaments/active"
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    for item in data:
-                        tournament_id = str(item.get('id_torneig'))
-                        num_players = item.get('num_jugadors')
-                        create_tournament(tournament_id, num_players)
-                        print(f"id: {tournament_id}, max players: {num_players}")
-                else:
-                    print(f"Failed to fetch data. Status: {response.status}")
-        except Exception as e:
-            print(f"Error during GET request: {e}")
-
 
 def print_tournaments():
     """
@@ -168,16 +155,21 @@ async def main():
     Main entry point for the server.
     Starts the server, periodic GET request, and connection checking tasks.
     """
-    server = await asyncio.start_server(handle_client, HOST, PORT)
-    addr = server.sockets[0].getsockname()
-    print(f"Server running on {addr}")
+    global shared_session
+    shared_session = aiohttp.ClientSession()  # Initialize the shared session
 
-    # Start periodic tasks
-    asyncio.create_task(periodic_get_request())
-    asyncio.create_task(check_connections_and_notify())
+    try:
+        server = await asyncio.start_server(handle_client, HOST, PORT)
+        addr = server.sockets[0].getsockname()
+        print(f"Server running on {addr}")
+        # Start periodic tasks
+        asyncio.create_task(periodic_get_request())
+        asyncio.create_task(check_connections_and_notify())
 
-    async with server:
-        await server.serve_forever()
+        async with server:
+            await server.serve_forever()
+    finally:
+        await shared_session.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
