@@ -37,7 +37,6 @@ async def handle_client(reader, writer):
 
         # Parsejar el missatge
         codi, tournament_id, player_id, player_name = parse_client_message(message)
-        await delete_puntuacions_tournament(tournament_id, shared_session)
         # Registrar el jugador
         await register_player(tournament_id, player_id,player_name, writer)
 
@@ -111,14 +110,17 @@ async def register_player(tournament_id, player_id, player_name, writer):
 
         # Add the player to the tournament
         tournament.add_player(player)
+        
+        await delete_puntuacions_tournament(tournament_id, shared_session)
         # Call post_add_puntuacio with shared_session
-        await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
 
         # Notify all players in the tournament
         player_names = [p.nom for p in tournament.players]
         notification = f"1.{'.'.join(player_names)}\n"
         
         for p in tournament.players:
+                
+                await post_add_puntuacio(p.id_jugador, p.id_torneig, shared_session)
                 await p.send_message(notification)
             
 
