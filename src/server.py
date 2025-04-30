@@ -197,7 +197,7 @@ async def main():
         # Start periodic tasks
         asyncio.create_task(periodic_get_request(shared_session))
         asyncio.create_task(check_connections_and_notify())
-
+        await periodic_get_request(shared_session)  # Initial call to fetch active tournaments
         async with server:
             await server.serve_forever()
     finally:
