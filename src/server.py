@@ -194,7 +194,7 @@ async def main():
         addr = server.sockets[0].getsockname()
         print(f"Server running on {addr}")
         # Start periodic tasks
-        asyncio.create_task(periodic_get_request())
+        asyncio.create_task(periodic_get_request(shared_session))
         asyncio.create_task(check_connections_and_notify())
 
         async with server:
