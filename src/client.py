@@ -6,7 +6,7 @@ PORT = 8444
 
 async def client(client_id):
     reader, writer = await asyncio.open_connection(HOST, PORT)
-    tournament_id = "3"
+    tournament_id = "7"
     player_id = client_id
     message = f"0.{tournament_id}.{player_id}.player{player_id}"
     print(f"Sending: {message}")

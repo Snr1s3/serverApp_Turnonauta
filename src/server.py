@@ -132,7 +132,9 @@ async def start_tournament():
     """
     print("Checking tournaments...")
     for id, tournament in dict_tournaments.items():
-        tournament.check_number_of_players()
+        print("hola")
+        if tournament.status == "waiting":
+            tournament.check_number_of_players()
         if tournament.status == "ready":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
@@ -181,7 +183,8 @@ async def periodic_get_request(shared_session):
                     for item in data:
                         tournament_id = str(item.get('id_torneig'))
                         max_players = item.get('num_jugadors')
-                        create_tournament(tournament_id, max_players)
+                        format = item.get('format')
+                        create_tournament(tournament_id, max_players, format)
                 else:
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:
