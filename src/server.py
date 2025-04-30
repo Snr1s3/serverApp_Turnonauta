@@ -188,7 +188,8 @@ async def check_connections_and_notify():
 
             # Remove disconnected players from the tournament
             for p_id in disconnected_players:
-                tournament.players.remove(p_id)
+                if p_id in tournament.players:
+                    tournament.players.remove(p_id)
                 players[:] = [p for p in players if p.id_jugador != p_id]
 
         # Wait for 2 seconds before the next check
