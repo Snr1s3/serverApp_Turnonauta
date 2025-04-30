@@ -35,6 +35,7 @@ async def delete_puntuacions_tournament(tournament_id,shared_session):
     """
     Perform a DELETE request to the server to remove all puntuacions for a tournament.
     """
+    print(f"Deleting puntuacions for tournament {tournament_id}")
     url = f"{BASE_URL}puntuacions/delete_puntuacions_tournament/{tournament_id}"
 
     try:
