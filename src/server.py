@@ -178,11 +178,14 @@ async def check_connections_and_notify():
                         print(f"Sending notification to player {p.id_jugador}")
                         
                         await post_add_puntuacio(p.id_jugador, p.id_torneig, shared_session)
-                        await p.send_message(notification)
+                        if (await p.send_message(notification) == 1):
+                            # If sending fails, mark the player as disconnected
+                            print(f"Failed to send message to player {p.id_jugador}. Marking as disconnected.")
+                            await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
+                            disconnected_players.append(p.id_jugador)
                     except (ConnectionResetError, BrokenPipeError):
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
-                        await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
                         disconnected_players.append(p)
 
             # Remove disconnected players from the tournament
