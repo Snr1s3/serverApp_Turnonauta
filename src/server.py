@@ -104,11 +104,9 @@ async def register_player(tournament_id, player_id, player_name, writer):
 
     try:
         # Add the player to the global players list
-        player = next((p for p in players if p.id_jugador == player_id), None)
-        if not player:
-            # Create a new player if not found
-            player = Jugador(player_id, tournament_id, player_name, writer)
-            players.append(player)
+        # Create a new player if not found
+        player = Jugador(player_id, tournament_id, player_name, writer)
+        players.append(player)
 
         # Add the player to the tournament
         tournament.add_player(player)
