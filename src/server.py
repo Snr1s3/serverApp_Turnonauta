@@ -176,6 +176,8 @@ async def check_connections_and_notify():
                     try:
                         # Send the updated player list to the player
                         print(f"Sending notification to player {p.id_jugador}")
+                        
+                        await post_add_puntuacio(p.id_jugador, p.id_torneig, shared_session)
                         await p.send_message(notification)
                     except (ConnectionResetError, BrokenPipeError):
                         # Handle disconnected players

@@ -10,7 +10,7 @@ class Jugador:
             self.writer.write(message.encode())
             await self.writer.drain()
         except Exception as e:
-            print(f"Error sending message to player {self.id_jugador}: {e}")
+            raise ConnectionError(f"Failed to send message to player {self.id_jugador}: {e}")
     
 
     def __str__(self):
