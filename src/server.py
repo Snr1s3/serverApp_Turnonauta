@@ -60,6 +60,7 @@ def parse_client_message(message):
 
 async def register_player(tournament_id, player_id,player_name, writer):
     # Verificar si el torneig és vàlid
+    print("Current Tournaments:", dict_tournaments)
     if tournament_id not in dict_tournaments:
         writer.write(b"Invalid Tournament.\n")
         await writer.drain()
