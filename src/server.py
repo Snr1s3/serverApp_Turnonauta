@@ -44,7 +44,7 @@ def print_tournaments():
     Print all tournaments and their players.
     """
     print("\nCurrent Tournaments:")
-    for tournament in dict_tournaments.items():
+    for tournament in dict_tournaments.values:
         print(f"Tournament: {tournament.id_torneig}")
         for player_id in tournament.players:
             print(f"  Player ID: {player_id}")
@@ -131,7 +131,7 @@ async def start_tournament():
     Start the tournament if the number of players is sufficient.
     """
     print("Checking tournaments...")
-    for tournament in dict_tournaments.values():
+    for id, tournament in dict_tournaments.items():
         tournament.check_number_of_players()
         if tournament.status == "ready":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
