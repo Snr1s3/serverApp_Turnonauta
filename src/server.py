@@ -81,9 +81,9 @@ def parse_client_message(message):
         raise ValueError("Invalid data format. Use 'codi.tournament_id.player_id.player_name'.")
 
 
-async def register_player(tournament_id, player_id,player_name, writer):
+async def register_player(tournament_id, player_id, player_name, writer):
     global shared_session
-    # Verificar si el torneig és vàlid
+    # Verify if the tournament is valid
     print("Current Tournaments:", dict_tournaments)
     if tournament_id not in dict_tournaments:
         writer.write(b"Invalid Tournament.\n")
@@ -92,7 +92,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
         await writer.wait_closed()
         return
 
-    # Verificar si el jugador ja està registrat
+    # Verify if the player is already registered
     if is_player_registered(player_id):
         writer.write(b"Player ID already registered in another tournament.\n")
         await writer.drain()
@@ -100,46 +100,30 @@ async def register_player(tournament_id, player_id,player_name, writer):
         await writer.wait_closed()
         return
 
-    # Agafar el torneig
+    # Get the tournament
     tournament = dict_tournaments[tournament_id]
 
-    await delete_puntuacions_tournament(tournament_id, shared_session)
     try:
-        # Afegir jugador a la llista de jugadors
+        # Add the player to the global players list
         if not any(p.id_jugador == player_id for p in players):
-            players.append(Jugador(player_id, tournament_id, player_name, writer))
+            player = Jugador(player_id, tournament_id, player_name, writer)
+            players.append(player)
 
-        # Afegir jugador al torneig
-        tournament.add_player(player_id)
-        #writer.write(b"Registered for the tournament!\n")
-        #await writer.drain()
+        # Add the player to the tournament
+        tournament.add_player(player)
 
-        # Notificar tots els jugadors del torneig
-        player_names = [p.nom for p in players if p.id_jugador in tournament.players]
-        notification = (
-            f"1.{'.'.join(player_names)}\n"
-        )
-        disconnected_players = []
-        for p_id in tournament.players:
-            p = next((pl for pl in players if pl.id_jugador == p_id), None)
-            try:
-                await post_add_puntuacio(p.id_jugador,p.id_torneig)
-                p.writer.write(notification.encode())
-                await p.writer.drain()
-            except ConnectionResetError:
-                print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
-                disconnected_players.append(p_id)
+        # Call post_add_puntuacio with shared_session
+        await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
 
-        # Eliminar desconnectats
-        for p_id in disconnected_players:
-            tournament.players.remove(p_id)
+        # Notify all players in the tournament
+        player_names = [p.nom for p in tournament.players]
+        notification = f"1.{'.'.join(player_names)}\n"
+        for p in tournament.players:
+            await p.send_message(notification)
 
-        print_tournaments()
     except ValueError as e:
         writer.write(f"{str(e)}\n".encode())
         await writer.drain()
-        writer.close()
-        await writer.wait_closed()
 
 
 def is_player_registered(player_id):
