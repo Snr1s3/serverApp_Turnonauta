@@ -130,6 +130,7 @@ async def start_tournament():
     """
     Start the tournament if the number of players is sufficient.
     """
+    print("Checking tournaments...")
     for tournament in dict_tournaments.values():
         tournament.check_number_of_players()
         if tournament.status == "ready":
