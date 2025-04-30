@@ -82,6 +82,7 @@ def parse_client_message(message):
 
 
 async def register_player(tournament_id, player_id,player_name, writer):
+    global shared_session
     # Verificar si el torneig és vàlid
     print("Current Tournaments:", dict_tournaments)
     if tournament_id not in dict_tournaments:
@@ -102,7 +103,7 @@ async def register_player(tournament_id, player_id,player_name, writer):
     # Agafar el torneig
     tournament = dict_tournaments[tournament_id]
 
-    await delete_puntuacions_tournament(tournament_id)
+    await delete_puntuacions_tournament(tournament_id, shared_session)
     try:
         # Afegir jugador a la llista de jugadors
         if not any(p.id_jugador == player_id for p in players):
@@ -171,6 +172,8 @@ def print_tournaments():
             print(f"  Player ID: {player_id}")
 
 async def check_connections_and_notify():
+    
+    global shared_session
     """
     Periodically checks the connection with all players and sends an updated list
     of players in each tournament to all connected players.
@@ -194,7 +197,7 @@ async def check_connections_and_notify():
                     except ConnectionResetError:
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
-                        await delete_puntuacions_user(p.id_jugador, tournament_id)
+                        await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
                         disconnected_players.append(p_id)
 
             # Remove disconnected players from the tournament
