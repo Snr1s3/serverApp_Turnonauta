@@ -47,7 +47,7 @@ async def handle_client(reader, writer):
 
 async def periodic_get_request(shared_session):
     """
-    Gets de tornejos actius.
+    Periodically fetch active tournaments and save them to dict_tournaments.
     """
     url = BASE_URL + "tournaments/active"
     try:
@@ -57,7 +57,12 @@ async def periodic_get_request(shared_session):
                 for item in data:
                     tournament_id = str(item.get('id_torneig'))
                     num_players = item.get('num_jugadors')
-                    print(f"id: {tournament_id}, max players: {num_players}")
+
+                    # Save the tournament to dict_tournaments
+                    if tournament_id not in dict_tournaments:
+                        dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
+
+                    print(f"Saved tournament: id={tournament_id}, max players={num_players}")
             else:
                 print(f"Failed to fetch data. Status: {response.status}")
     except Exception as e:
@@ -215,7 +220,6 @@ async def main():
         # Start periodic tasks
         asyncio.create_task(periodic_get_request(shared_session))
         asyncio.create_task(check_connections_and_notify())
-        await periodic_get_request(shared_session)  # Initial call to fetch active tournaments
         async with server:
             await server.serve_forever()
     finally:
