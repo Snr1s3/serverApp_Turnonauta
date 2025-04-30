@@ -12,6 +12,8 @@ HOST = '0.0.0.0'
 PORT = 8444
 shared_session = None
 
+BASE_URL = "https://turnonauta.asegura.dev:8443/"
+
 # Dictionary to store tournaments
 dict_tournaments = {}
 
