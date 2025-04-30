@@ -179,9 +179,7 @@ async def check_connections_and_notify():
             notification = f"1.{'.'.join(player_names)}\n"
             print(f"Sending notification to tournament {tournament_id}: {notification}")
             disconnected_players = []
-            for p_id in tournament.players:
-                
-                p = next((pl for pl in players if pl.id_jugador == p_id), None)
+            for p in tournament.players:
                 if p:
                     try:
                         # Send the updated player list to the player
