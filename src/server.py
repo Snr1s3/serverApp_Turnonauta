@@ -134,7 +134,11 @@ async def notify_tournament_players(tournament):
 
     for player in tournament.players:
         try:
-            await player.send_message(notification)
+
+            num = await player.send_message(notification)
+            if num == 1:
+                print(f"Failed to send message to player {player.id_jugador}. Removing from tournament.")
+                await remove_disconnected_player(player, tournament)
         except (ConnectionResetError, BrokenPipeError):
             print(f"Failed to notify player {player.id_jugador}. Removing from tournament.")
             await remove_disconnected_player(player, tournament)
