@@ -34,6 +34,7 @@ def create_tournament(tournament_id, max_players):
     """
     if tournament_id not in dict_tournaments:
         dict_tournaments[tournament_id] = Torneig(tournament_id, max_players)
+        print(f"Saved tournament: id={tournament_id}, max players={max_players}")
         return True
     return False
 
@@ -123,7 +124,17 @@ async def register_player(tournament_id, player_id, player_name, writer):
 
     # Add the player's puntuacions
     await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
+    print_tournaments()
 
+async def start_tournament():
+    """
+    Start the tournament if the number of players is sufficient.
+    """
+    for tournament in dict_tournaments.values():
+        tournament.check_number_of_players()
+        if tournament.status == "ready":
+            print(f"Tournament {tournament.id_torneig} is ready to start.")
+            tournament.status = "started"
 
 async def notify_tournament_players(tournament):
     """
@@ -169,7 +180,6 @@ async def periodic_get_request(shared_session):
                         tournament_id = str(item.get('id_torneig'))
                         max_players = item.get('num_jugadors')
                         create_tournament(tournament_id, max_players)
-                        print(f"Saved tournament: id={tournament_id}, max players={max_players}")
                 else:
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:

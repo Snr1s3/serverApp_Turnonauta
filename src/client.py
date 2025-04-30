@@ -32,9 +32,10 @@ async def client(client_id):
         writer.close()
         await writer.wait_closed()
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Client for connecting to the server.")
-    parser.add_argument("client_id", type=str, help="The ID of the client.")
-    args = parser.parse_args()
+async def main():
+    # Run 4 clients concurrently
+    tasks = [client(i) for i in range(2, 6)]
+    await asyncio.gather(*tasks)
 
-    asyncio.run(client(args.client_id))
+if __name__ == "__main__":
+    asyncio.run(main())
