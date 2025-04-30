@@ -111,7 +111,6 @@ async def register_player(tournament_id, player_id, player_name, writer):
 
         # Add the player to the tournament
         tournament.add_player(player)
-        await delete_puntuacions_tournament(tournament_id, shared_session)
         # Call post_add_puntuacio with shared_session
         await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
 
