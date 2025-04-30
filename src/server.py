@@ -169,6 +169,7 @@ async def check_connections_and_notify():
 
             disconnected_players = []
             for p_id in tournament.players:
+                print(f"Checking player {p_id} in tournament {tournament_id}")
                 p = next((pl for pl in players if pl.id_jugador == p_id), None)
                 if p:
                     try:
@@ -189,7 +190,7 @@ async def check_connections_and_notify():
 
         # Wait for 2 seconds before the next check
         await asyncio.sleep(2)
-        
+
 async def main():
     """
     Main entry point for the server.
