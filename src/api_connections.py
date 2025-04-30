@@ -24,7 +24,7 @@ async def post_add_puntuacio(user_id, tournament_id,shared_session):
         async with shared_session.post(url, json=payload) as response:
             if response.status in (200, 201):
                 data = await response.json()
-                print(f"Success: {data}")
+                #print(f"Success: {data}")
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
@@ -41,7 +41,7 @@ async def delete_puntuacions_tournament(tournament_id,shared_session):
         async with shared_session.delete(url) as response:
             if response.status == 200:
                 data = await response.json()
-                print(f"Success: {data}")
+                #print(f"Success: {data}")
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
@@ -59,7 +59,7 @@ async def delete_puntuacions_user(user_id, tournament_id,shared_session):
         async with shared_session.delete(url) as response:
             if response.status == 200:
                 data = await response.json()
-                print(f"Success: {data}")
+               # print(f"Success: {data}")
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")

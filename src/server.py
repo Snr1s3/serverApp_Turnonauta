@@ -153,7 +153,6 @@ def print_tournaments():
         print(f"Tournament: {tournament.id_torneig}")
         for player_id in tournament.players:
             print(f"  Player ID: {player_id}")
-
 async def check_connections_and_notify():
     """
     Periodically checks the connection with all players and sends an updated list
@@ -166,6 +165,7 @@ async def check_connections_and_notify():
             # Get the list of player names in the tournament
             player_names = [p.nom for p in players if p.id_jugador in tournament.players]
             notification = f"1.{'.'.join(player_names)}\n"
+            print(f"Sending notification to tournament {tournament_id}: {notification}")
 
             disconnected_players = []
             for p_id in tournament.players:
@@ -173,6 +173,7 @@ async def check_connections_and_notify():
                 if p:
                     try:
                         # Send the updated player list to the player
+                        print(f"Sending notification to player {p.id_jugador}")
                         p.writer.write(notification.encode())
                         await p.writer.drain()
                     except (ConnectionResetError, BrokenPipeError):
@@ -188,7 +189,7 @@ async def check_connections_and_notify():
 
         # Wait for 2 seconds before the next check
         await asyncio.sleep(2)
-
+        
 async def main():
     """
     Main entry point for the server.
