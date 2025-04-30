@@ -185,7 +185,7 @@ async def check_connections_and_notify():
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
                         disconnected_players.append(p)
-
+            print(f"Disconnected players: {disconnected_players}")
             # Remove disconnected players from the tournament
             for p_id in disconnected_players:
                 print(f"Removing player {p_id} from tournament {tournament_id}")
