@@ -58,9 +58,7 @@ async def periodic_get_request(shared_session):
                     tournament_id = str(item.get('id_torneig'))
                     num_players = item.get('num_jugadors')
 
-                    # Save the tournament to dict_tournaments
-                    if tournament_id not in dict_tournaments:
-                        dict_tournaments[tournament_id] = Torneig(tournament_id, num_players)
+                    create_tournament(tournament_id, num_players)
 
                     print(f"Saved tournament: id={tournament_id}, max players={num_players}")
             else:
