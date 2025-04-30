@@ -180,7 +180,7 @@ async def check_connections_and_notify():
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
                         await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
-                        disconnected_players.append(p_id)
+                        disconnected_players.append(p)
 
             # Remove disconnected players from the tournament
             for p_id in disconnected_players:
