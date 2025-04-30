@@ -44,10 +44,10 @@ def print_tournaments():
     Print all tournaments and their players.
     """
     print("\nCurrent Tournaments:")
-    for tournament in dict_tournaments.values:
+    for tournament in dict_tournaments.values(): 
         print(f"Tournament: {tournament.id_torneig}")
-        for player_id in tournament.players:
-            print(f"  Player ID: {player_id}")
+        for player in tournament.players:
+            print(f"  Player ID: {player.id_jugador}")
 
 
 async def send_error_message(writer, message):
