@@ -120,16 +120,7 @@ async def register_player(tournament_id, player_id, player_name, writer):
         
         disconnected_players = []
         for p in tournament.players:
-            try:
                 await p.send_message(notification)
-            except (ConnectionResetError, BrokenPipeError):
-                        # Handle disconnected players
-                print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
-                await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
-                disconnected_players.append(p)
-        for p_id in disconnected_players:
-            tournament.players.remove(p_id)
-            players[:] = [p for p in players if p.id_jugador != p_id]
             
 
     except ValueError as e:
@@ -184,8 +175,7 @@ async def check_connections_and_notify():
                     try:
                         # Send the updated player list to the player
                         print(f"Sending notification to player {p.id_jugador}")
-                        p.writer.write(notification.encode())
-                        await p.writer.drain()
+                        await p.send_message(notification)
                     except (ConnectionResetError, BrokenPipeError):
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
