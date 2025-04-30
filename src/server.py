@@ -44,7 +44,7 @@ def print_tournaments():
     Print all tournaments and their players.
     """
     print("\nCurrent Tournaments:")
-    for tournament in dict_tournaments.values():
+    for tournament in dict_tournaments.items():
         print(f"Tournament: {tournament.id_torneig}")
         for player_id in tournament.players:
             print(f"  Player ID: {player_id}")
