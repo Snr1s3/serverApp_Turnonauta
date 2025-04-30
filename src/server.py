@@ -118,7 +118,6 @@ async def register_player(tournament_id, player_id, player_name, writer):
         player_names = [p.nom for p in tournament.players]
         notification = f"1.{'.'.join(player_names)}\n"
         
-        disconnected_players = []
         for p in tournament.players:
                 await p.send_message(notification)
             
@@ -166,7 +165,7 @@ async def check_connections_and_notify():
     while True:
         for tournament_id, tournament in dict_tournaments.items():
             # Get the list of player names in the tournament
-            player_names = [p.nom for p in players if p.id_jugador in tournament.players]
+            player_names = [p.nom for p in tournament.players]
             notification = f"1.{'.'.join(player_names)}\n"
             print(f"Sending notification to tournament {tournament_id}: {notification}")
             disconnected_players = []
