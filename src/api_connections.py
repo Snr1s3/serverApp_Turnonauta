@@ -48,11 +48,11 @@ async def delete_puntuacions_tournament(tournament_id,shared_session):
     except Exception as e:
         print(f"Error during DELETE request: {e}")
 
-async def delete_puntuacions_user(user_id, tournament_id):
+async def delete_puntuacions_user(user_id, tournament_id,shared_session):
     """
     Perform a DELETE request to the server to remove all puntuacions for a user in a tournament.
     """
-    global shared_session
+    
     url = f"{BASE_URL}puntuacions/delete_by_user/{user_id}/{tournament_id}"
 
     try:
