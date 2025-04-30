@@ -195,6 +195,7 @@ async def check_connections_and_notify():
     """
     while True:
         await start_tournament()
+        print("Checking connections...")
         for tournament_id, tournament in dict_tournaments.items():
             await notify_tournament_players(tournament)
         await asyncio.sleep(2)  # Check every 2 seconds
