@@ -5,23 +5,7 @@ BASE_URL = "https://turnonauta.asegura.dev:8443/"
 
 
 
-async def periodic_get_request(shared_session):
-    """
-    Gets de tornejos actius.
-    """
-    url = BASE_URL + "tournaments/active"
-    try:
-        async with shared_session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                for item in data:
-                    tournament_id = str(item.get('id_torneig'))
-                    num_players = item.get('num_jugadors')
-                    print(f"id: {tournament_id}, max players: {num_players}")
-            else:
-                print(f"Failed to fetch data. Status: {response.status}")
-    except Exception as e:
-        print(f"Error during GET request: {e}")
+
 
 async def post_add_puntuacio(user_id, tournament_id,shared_session):
     """

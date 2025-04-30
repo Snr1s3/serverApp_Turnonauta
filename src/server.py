@@ -6,7 +6,6 @@ from api_connections import (
     post_add_puntuacio,
     delete_puntuacions_tournament,
     delete_puntuacions_user,
-    periodic_get_request,
 )
 # Server configuration
 HOST = '0.0.0.0'
@@ -44,6 +43,23 @@ async def handle_client(reader, writer):
         writer.write(f"{str(e)}\n".encode())
         await writer.drain()
 
+async def periodic_get_request(shared_session):
+    """
+    Gets de tornejos actius.
+    """
+    url = BASE_URL + "tournaments/active"
+    try:
+        async with shared_session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                for item in data:
+                    tournament_id = str(item.get('id_torneig'))
+                    num_players = item.get('num_jugadors')
+                    print(f"id: {tournament_id}, max players: {num_players}")
+            else:
+                print(f"Failed to fetch data. Status: {response.status}")
+    except Exception as e:
+        print(f"Error during GET request: {e}")
 
 def parse_client_message(message):
     """
