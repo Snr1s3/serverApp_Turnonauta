@@ -158,6 +158,7 @@ async def check_connections_and_notify():
     of players in each tournament to all connected players.
     """
     global shared_session
+    print("Checking connections and notifying players...")
     while True:
         for tournament_id, tournament in dict_tournaments.items():
             # Get the list of player names in the tournament
