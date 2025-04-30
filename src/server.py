@@ -135,6 +135,7 @@ async def start_tournament():
         if tournament.status == "ready":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
+    
 
 async def notify_tournament_players(tournament):
     """
@@ -192,6 +193,7 @@ async def check_connections_and_notify():
     Periodically check player connections and notify players in tournaments.
     """
     while True:
+        await start_tournament()
         for tournament_id, tournament in dict_tournaments.items():
             await notify_tournament_players(tournament)
         await asyncio.sleep(2)  # Check every 2 seconds
