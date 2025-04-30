@@ -25,6 +25,7 @@ async def handle_client(reader, writer):
     """
     Connexio client.
     """
+    global shared_session
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
 
@@ -36,7 +37,7 @@ async def handle_client(reader, writer):
 
         # Parsejar el missatge
         codi, tournament_id, player_id, player_name = parse_client_message(message)
-
+        await delete_puntuacions_tournament(tournament_id, shared_session)
         # Registrar el jugador
         await register_player(tournament_id, player_id,player_name, writer)
 
@@ -175,7 +176,6 @@ async def check_connections_and_notify():
     while True:
         for tournament_id, tournament in dict_tournaments.items():
             # Get the list of player names in the tournament
-            await delete_puntuacions_tournament(tournament_id, shared_session)
             player_names = [p.nom for p in players if p.id_jugador in tournament.players]
             notification = f"1.{'.'.join(player_names)}\n"
             print(f"Sending notification to tournament {tournament_id}: {notification}")
