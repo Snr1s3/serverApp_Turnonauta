@@ -156,19 +156,16 @@ def print_tournaments():
             print(f"  Player ID: {player_id}")
 
 async def check_connections_and_notify():
-    
-    global shared_session
     """
     Periodically checks the connection with all players and sends an updated list
     of players in each tournament to all connected players.
     """
+    global shared_session
     while True:
         for tournament_id, tournament in dict_tournaments.items():
             # Get the list of player names in the tournament
             player_names = [p.nom for p in players if p.id_jugador in tournament.players]
-            notification = (
-                f"1.{'.'.join(player_names)}\n"
-            )
+            notification = f"1.{'.'.join(player_names)}\n"
 
             disconnected_players = []
             for p_id in tournament.players:
@@ -178,7 +175,7 @@ async def check_connections_and_notify():
                         # Send the updated player list to the player
                         p.writer.write(notification.encode())
                         await p.writer.drain()
-                    except ConnectionResetError:
+                    except (ConnectionResetError, BrokenPipeError):
                         # Handle disconnected players
                         print(f"Connection lost with player {p.id_jugador}. Removing from tournament.")
                         await delete_puntuacions_user(p.id_jugador, tournament_id, shared_session)
