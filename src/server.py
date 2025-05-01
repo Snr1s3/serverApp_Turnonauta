@@ -184,7 +184,7 @@ async def periodic_get_request(shared_session):
                         tournament_id = str(item.get('id_torneig'))
                         max_players = item.get('num_jugadors')
                         format = item.get('format')
-                        create_tournament(tournament_id, max_players, format)
+                        create_tournament(tournament_id, max_players)
                 else:
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:
