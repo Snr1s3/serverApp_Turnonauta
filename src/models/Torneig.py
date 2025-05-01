@@ -1,12 +1,12 @@
 class Torneig:
 
-    def __init__(self, id_torneig, max_players, toreig_type):
+    def __init__(self, id_torneig, max_players):
         self.id_torneig = id_torneig
         self.max_players = max_players
         self.players = []
-        self.foramt = toreig_type
-        self.status = "waiting"
-        self.round = 0
+        #self.foramt = toreig_type
+        #self.status = "waiting"
+        #self.round = 0
 
     def add_player(self, player_id):
         if len(self.players) >= self.max_players:
