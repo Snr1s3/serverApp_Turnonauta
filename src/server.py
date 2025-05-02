@@ -132,12 +132,13 @@ async def start_tournament():
     """
     print("Checking tournaments...")
     for id, tournament in dict_tournaments.items():
-        print("hola")
-        """if tournament.status == "waiting":
+        print("Checking tournament:", id)
+        if tournament.status == "waiting":
             tournament.check_number_of_players()
         if tournament.status == "ready":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
-            tournament.status = "started" """
+            tournament.status = "started"
+        print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
 
 async def notify_tournament_players(tournament):
