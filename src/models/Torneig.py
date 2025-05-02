@@ -10,7 +10,7 @@ class Torneig:
         self.status = "waiting"
         self.round = 0
         self.max_rounds = math.ceil(math.log2(max_players))
-        print("Number of rounds: ", self.max_rounds)
+        #print("Number of rounds: ", self.max_rounds)
 
     def add_player(self, player_id):
         if len(self.players) >= self.max_players:
@@ -22,6 +22,7 @@ class Torneig:
     def check_number_of_players(self):
         if len(self.players) == self.max_players:
             self.status = "ready"
+            print(f"Torneig {self.id_torneig} is ready to start. Rounds: {self.max_rounds}")
             return True
         else:
             self.status = "waiting"

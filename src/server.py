@@ -138,6 +138,11 @@ async def start_tournament():
             tournament.status = "started"
         print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
+async def make_parings(tournament):
+    """
+    Create pairings for the tournament.
+    """
+    print(f"Creating pairings for tournament {tournament.id_torneig}")
 
 async def notify_tournament_players(tournament):
     """
