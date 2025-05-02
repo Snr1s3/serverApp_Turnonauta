@@ -15,7 +15,9 @@ async def post_add_puntuacio(user_id, tournament_id,shared_session):
     payload = {
         "id_torneig": tournament_id,
         "id_usuari": user_id,
+        "sos": 0,
         "victories": 0,
+        "empat": 0,
         "derrotes": 0,
         "punts": 0
     }
