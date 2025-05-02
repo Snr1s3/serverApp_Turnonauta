@@ -4,8 +4,8 @@ class Torneig:
         self.id_torneig = id_torneig
         self.max_players = max_players
         self.players = []
-        self.foramt = format
-        #self.status = "waiting"
+        self.format = format
+        self.status = "waiting"
         #self.round = 0
 
     def add_player(self, player_id):
