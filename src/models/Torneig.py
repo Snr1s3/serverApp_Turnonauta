@@ -1,10 +1,10 @@
 class Torneig:
 
-    def __init__(self, id_torneig, max_players):
+    def __init__(self, id_torneig, max_players, format):
         self.id_torneig = id_torneig
         self.max_players = max_players
         self.players = []
-        #self.foramt = toreig_type
+        self.foramt = format
         #self.status = "waiting"
         #self.round = 0
 

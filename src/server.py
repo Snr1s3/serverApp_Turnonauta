@@ -28,13 +28,13 @@ def is_player_registered(player_id):
     return any(player_id in tournament.players for tournament in dict_tournaments.values())
 
 
-def create_tournament(tournament_id, max_players):
+def create_tournament(tournament_id, max_players, format):
     """
     Create a new tournament and add it to the global dictionary.
     """
     if tournament_id not in dict_tournaments:
         dict_tournaments[tournament_id] = Torneig(tournament_id, max_players)
-        print(f"Saved tournament: id={tournament_id}, max players={max_players}")
+        print(f"Saved tournament: id={tournament_id}, max players={max_players}, format={format}")
         return True
     return False
 
@@ -184,7 +184,7 @@ async def periodic_get_request(shared_session):
                         tournament_id = str(item.get('id_torneig'))
                         max_players = item.get('num_jugadors')
                         format = item.get('format')
-                        create_tournament(tournament_id, max_players)
+                        create_tournament(tournament_id, max_players, format)
                 else:
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:
