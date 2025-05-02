@@ -33,7 +33,7 @@ def create_tournament(tournament_id, max_players, format):
     Create a new tournament and add it to the global dictionary.
     """
     if tournament_id not in dict_tournaments:
-        dict_tournaments[tournament_id] = Torneig(tournament_id, max_players)
+        dict_tournaments[tournament_id] = Torneig(tournament_id, max_players, format)
         print(f"Saved tournament: id={tournament_id}, max players={max_players}, format={format}")
         return True
     return False
