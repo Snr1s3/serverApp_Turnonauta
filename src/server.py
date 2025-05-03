@@ -154,6 +154,7 @@ async def make_parings(tournament):
         for player in players_puntuacio:
             if player.id_jugador in tournament.players:
                 tournaments_players.append(player)
+        print("Number of players:", len(tournaments_players))
         t_length = (len(tournaments_players)-1)/2
         print("Number of pairings:", t_length)
         for i in range(0, t_length):     
