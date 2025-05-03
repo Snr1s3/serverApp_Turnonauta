@@ -3,6 +3,11 @@ class Jugador:
         self.id_jugador = id_jugador
         self.id_torneig = id_torneig
         self.nom = player_name
+        self.sos = 0
+        self.victories = 0
+        self.empat = 0
+        self.derrotes = 0
+        self.punts = 0
         self.writer = writer
 
     async def send_message(self, message):

@@ -1,10 +1,12 @@
 import asyncio
 import aiohttp
+import random
 from models.Jugador import Jugador
 from models.Torneig import Torneig
 from api_connections import (
     post_add_puntuacio,
     delete_puntuacions_tournament,
+    get_puntuacions,
     delete_puntuacions_user,
 )
 
@@ -142,8 +144,28 @@ async def make_parings(tournament):
     """
     Create pairings for the tournament.
     """
+    tournaments_players = []
+    paired_players = []
     print(f"Creating pairings for tournament {tournament.id_torneig}")
+    if tournament.round == 0:
+        print("First round")
+        players =  get_puntuacions(tournament.id_torneig, shared_session, players)
+        for player in players:
+            if player.id_jugador in tournament.players:
+                tournaments_players.append(player)
+        t_length = (len(tournaments_players)-1)/2
+        print("Number of players:", t_length)
+        for i in range(0, t_length):     
+            if len(tournaments_players) >= 2:
+                index1 = random.randint(0, len(tournaments_players) - 1)
+                index2 = random.randint(0, len(tournaments_players) - 1)
+                while index1 == index2:  # Ensure the indices are different
+                    index2 = random.randint(0, len(tournaments_players) - 1)
 
+                player1 = tournaments_players[index1]
+                player2 = tournaments_players[index2]
+                print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}")  
+                
 async def notify_tournament_players(tournament):
     """
     Notify all players in a tournament about the current player list.
