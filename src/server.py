@@ -6,7 +6,6 @@ from models.Torneig import Torneig
 from api_connections import (
     post_add_puntuacio,
     delete_puntuacions_tournament,
-    get_puntuacions,
     delete_puntuacions_user,
 )
 
@@ -145,14 +144,15 @@ async def make_parings(tournament):
     """
     Create pairings for the tournament.
     """
+    global players
+    global shared_session
     tournaments_players = []
     paired_players = []
     print(f"Creating pairings for tournament {tournament.id_torneig}")
     if tournament.round == 0:
         print("First round")
-        players_puntuacio =  await get_puntuacions(tournament.id_torneig, shared_session, players)
-        print(players_puntuacio)
-        for player in players_puntuacio:
+        await get_puntuacions(tournament.id_torneig, shared_session, players)
+        for player in players:
             if player.id_jugador in tournament.players:
                 tournaments_players.append(player)
         print("Number of players:", len(tournaments_players))
@@ -223,6 +223,26 @@ async def periodic_get_request(shared_session):
             print(f"Error during GET request: {e}")
         await asyncio.sleep(10)  # Fetch every 10 seconds
 
+async def get_puntuacions(tournament_id,shared_session, players):
+    url = BASE_URL + "puntuacions/get_by_tournament/" + str(tournament_id)
+    try:
+        async with shared_session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                for puntuacio in data:
+                    player_id = puntuacio["id_usuari"]
+                    if player_id in players:
+                        player = players[player_id]
+                        player.sos = puntuacio["sos"]
+                        player.victories = puntuacio["victories"]
+                        player.empat = puntuacio["empat"]
+                        player.derrotes = puntuacio["derrotes"]
+                        player.punts = puntuacio["punts"]
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during GET request: {e}")
 
 async def check_connections_and_notify():
     """

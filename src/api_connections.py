@@ -4,28 +4,6 @@ BASE_URL = "https://turnonauta.asegura.dev:8443/"
 
 
 
-async def get_puntuacions(tournament_id,shared_session, players):
-    url = BASE_URL + "puntuacions/get_by_tournament/" + str(tournament_id)
-    try:
-        async with shared_session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                for puntuacio in data:
-                    player_id = puntuacio["id_usuari"]
-                    if player_id in players:
-                        player = players[player_id]
-                        player.sos = puntuacio["sos"]
-                        player.victories = puntuacio["victories"]
-                        player.empat = puntuacio["empat"]
-                        player.derrotes = puntuacio["derrotes"]
-                        player.punts = puntuacio["punts"]
-            else:
-                error = await response.json()
-                print(f"Failed: {response.status}, {error}")
-    except Exception as e:
-        print(f"Error during GET request: {e}")
-    return players
-
 
 async def post_add_puntuacio(user_id, tournament_id,shared_session):
     """
