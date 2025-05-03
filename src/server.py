@@ -150,8 +150,8 @@ async def make_parings(tournament):
     print(f"Creating pairings for tournament {tournament.id_torneig}")
     if tournament.round == 0:
         print("First round")
-        players =  get_puntuacions(tournament.id_torneig, shared_session, players)
-        for player in players:
+        players_puntuacio =  get_puntuacions(tournament.id_torneig, shared_session, players)
+        for player in players_puntuacio:
             if player.id_jugador in tournament.players:
                 tournaments_players.append(player)
         t_length = (len(tournaments_players)-1)/2
@@ -165,6 +165,7 @@ async def make_parings(tournament):
 
                 player1 = tournaments_players[index1]
                 player2 = tournaments_players[index2]
+                paired_players.append((player1, player2))
                 print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}")  
                 
 async def notify_tournament_players(tournament):
