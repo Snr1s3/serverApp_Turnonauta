@@ -154,7 +154,7 @@ async def make_parings(tournament):
         await get_puntuacions(tournament.id_torneig, shared_session)
         for player in players:
             print("Player ", player)
-            if player.id_jugador in tournament.players:
+            if player.id_torneig == tournament.id_torneig:
                 tournaments_players.append(player)
         print("Number of players:", len(tournaments_players))
         t_length = (len(tournaments_players)-1)/2
