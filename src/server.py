@@ -138,6 +138,7 @@ async def start_tournament():
         if tournament.check_number_of_players():
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
+            make_parings(tournament)
         print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
 async def make_parings(tournament):
