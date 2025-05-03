@@ -151,6 +151,7 @@ async def make_parings(tournament):
     if tournament.round == 0:
         print("First round")
         players_puntuacio =  await get_puntuacions(tournament.id_torneig, shared_session, players)
+        print(players_puntuacio)
         for player in players_puntuacio:
             if player.id_jugador in tournament.players:
                 tournaments_players.append(player)
