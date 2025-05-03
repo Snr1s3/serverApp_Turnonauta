@@ -151,7 +151,7 @@ async def make_parings(tournament):
     print(f"Creating pairings for tournament {tournament.id_torneig}")
     if tournament.round == 0:
         print("First round")
-        await get_puntuacions(tournament.id_torneig, shared_session, players)
+        await get_puntuacions(tournament.id_torneig, shared_session)
         for player in players:
             if player.id_jugador in tournament.players:
                 tournaments_players.append(player)
@@ -223,7 +223,8 @@ async def periodic_get_request(shared_session):
             print(f"Error during GET request: {e}")
         await asyncio.sleep(10)  # Fetch every 10 seconds
 
-async def get_puntuacions(tournament_id,shared_session, players):
+async def get_puntuacions(tournament_id,shared_session):
+    global players
     url = BASE_URL + "puntuacions/get_by_tournament/" + str(tournament_id)
     try:
         async with shared_session.get(url) as response:
