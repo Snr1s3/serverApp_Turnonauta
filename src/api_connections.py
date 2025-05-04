@@ -43,6 +43,7 @@ async def post_add_ronda(id_jugador1, id_jugador2, tournament_id,shared_session)
     }
 
     try:
+        print(f"Adding ronda {id_jugador1} vs {id_jugador2} to tournament {tournament_id}")
         async with shared_session.post(url, json=payload) as response:
             if response.status in (200, 201):
                 data = await response.json()
