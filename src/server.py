@@ -6,6 +6,7 @@ from models.Torneig import Torneig
 from api_connections import (
     post_add_puntuacio,
     delete_puntuacions_tournament,
+    post_add_ronda,
     delete_puntuacions_user,
 )
 
