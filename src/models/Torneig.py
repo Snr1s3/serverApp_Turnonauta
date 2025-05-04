@@ -21,7 +21,6 @@ class Torneig:
 
     def check_number_of_players(self):
         if len(self.players) == self.max_players:
-            self.status = "ready"
             print(f"Torneig {self.id_torneig} is ready to start. Rounds: {self.max_rounds}")
             return True
         else:
