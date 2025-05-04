@@ -134,7 +134,7 @@ async def start_tournament():
     print("Checking tournaments...")
     for id, tournament in dict_tournaments.items():
         print("Checking tournament:", id)
-        if tournament.check_number_of_players():
+        if tournament.check_number_of_players() and  tournament.status == "waiting":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
             await make_parings(tournament)
