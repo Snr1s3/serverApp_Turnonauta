@@ -30,6 +30,28 @@ async def post_add_puntuacio(user_id, tournament_id,shared_session):
                 print(f"Failed: {response.status}, {error}")
     except Exception as e:
         print(f"Error during POST request: {e}")
+        
+async def post_add_ronda(id_jugador1, id_jugador2, tournament_id,shared_session):
+    """
+    Perform a POST request to the server to add a new puntuacio.
+    """
+    url = BASE_URL + "rondes/add"
+    payload = {
+        "id_torneig": tournament_id,
+        "id_player1": id_jugador1,
+        "id_player2":  id_jugador2
+    }
+
+    try:
+        async with shared_session.post(url, json=payload) as response:
+            if response.status in (200, 201):
+                data = await response.json()
+                #print(f"Success: {data}")
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during POST request: {e}")
 
 async def delete_puntuacions_tournament(tournament_id,shared_session):
     """
