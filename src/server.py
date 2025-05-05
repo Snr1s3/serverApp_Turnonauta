@@ -263,7 +263,7 @@ async def periodic_get_request(shared_session):
 
 async def get_puntuacions(tournament_id,shared_session):
     global players
-    url = BASE_URL + "puntuacions/get_by_tournament?tournament_id={tournament_id}"
+    url = BASE_URL + "puntuacions/get_by_tournament?tournament_id="+tournament_id
     try:
         playersNoSos = []
         async with shared_session.get(url) as response:
