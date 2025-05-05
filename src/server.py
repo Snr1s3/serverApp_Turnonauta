@@ -273,8 +273,9 @@ async def get_puntuacions(tournament_id,shared_session):
                 for puntuacio in data:
                     print("Puntuacio:", puntuacio)
                     player_id = puntuacio["id_usuari"]
-                    print(players)
+                    
                     if player_id in players:
+                        print("Player ID found in players list:", player_id)
                         player = players[player_id]
                         player.sos = puntuacio["sos"]
                         player.victories = puntuacio["victories"]
