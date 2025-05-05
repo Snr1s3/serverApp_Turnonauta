@@ -180,16 +180,25 @@ async def make_parings(tournament):
         tournament.round += 1
     if tournament.round > 0:
         if await getRondesAcabades(tournament.id_torneig, shared_session):
-            print
+            if tournament.round < tournament.max_rounds:
+                await notify_tournament_players(tournament, 2)
+                tournament.round += 1
+            else:
+                await notify_tournament_players(tournament, 3)
             
 
                 
-async def notify_tournament_players(tournament):
+async def notify_tournament_players(tournament,code):
     """
     Notify all players in a tournament about the current player list.
     """
     player_names = [p.nom for p in tournament.players]
-    notification = f"1.{'.'.join(player_names)}\n"
+    if code == 1:
+        notification = f"{code}.{'.'.join(player_names)}\n"
+    elif code == 2:
+        notification = f"{code}.{tournament.id_torneig}.pairing\n"
+    elif code == 3:
+        notification = f"{code}.{tournament.id_torneig}.end\n"
 
     for player in tournament.players:
         try:
@@ -265,7 +274,7 @@ async def check_connections_and_notify():
         await start_tournament()
         print("Checking connections...")
         for tournament_id, tournament in dict_tournaments.items():
-            await notify_tournament_players(tournament)
+            await notify_tournament_players(tournament, 1)
         await asyncio.sleep(2)  # Check every 2 seconds
 
 
