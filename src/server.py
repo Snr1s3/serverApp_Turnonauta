@@ -123,7 +123,7 @@ async def register_player(tournament_id, player_id, player_name, writer):
     tournament.add_player(player)
 
     # Notify all players in the tournament
-    await notify_tournament_players(tournament)
+    await notify_tournament_players(tournament,1)
 
     # Add the player's puntuacions
     await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
