@@ -7,6 +7,7 @@ from api_connections import (
     post_add_puntuacio,
     delete_puntuacions_tournament,
     post_add_ronda,
+    getRondesAcabades,
     delete_puntuacions_user,
 )
 
@@ -166,7 +167,7 @@ async def make_parings(tournament):
             if len(tournaments_players) >= 2:
                 index1 = random.randint(0, len(tournaments_players) - 1)
                 index2 = random.randint(0, len(tournaments_players) - 1)
-                while index1 == index2:  # Ensure the indices are different
+                while index1 == index2: 
                     index2 = random.randint(0, len(tournaments_players) - 1)
 
                 player1 = tournaments_players[index1]
@@ -179,6 +180,9 @@ async def make_parings(tournament):
         tournament.round += 1
     if tournament.round > 0:
         print("ronda 2")
+        if await getRondesAcabades(tournament.id_torneig, shared_session):
+            print("Rondes acabades")
+
                 
 async def notify_tournament_players(tournament):
     """

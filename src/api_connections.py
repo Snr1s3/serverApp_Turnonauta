@@ -3,7 +3,26 @@ import aiohttp
 BASE_URL = "https://turnonauta.asegura.dev:8443/"
 
 
-
+async def getRondesAcabades(tournament_id,shared_session):
+    """
+    Perform a GET request to the server to retrieve finished rounds for a tournament.
+    """
+    url = f"{BASE_URL}rondes/ronda_acabada?torneig_id={tournament_id}"
+    try:
+        async with shared_session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                if data == 0:
+                    return True
+                else:
+                    return False
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+                return None
+    except Exception as e:
+        print(f"Error during GET request: {e}")
+        return None
 
 async def post_add_puntuacio(user_id, tournament_id,shared_session):
     """
