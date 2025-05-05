@@ -139,6 +139,8 @@ async def start_tournament():
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
             await make_parings(tournament)
+        elif tournament.round > 0:
+            await make_parings(tournament)
         print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
 async def make_parings(tournament):
