@@ -184,6 +184,23 @@ async def make_parings(tournament):
         if acabades:
             if tournament.round < tournament.max_rounds:
                 await notify_tournament_players(tournament, 2)
+                await getPlayersBySos(tournament.id_torneig, shared_session)
+                for player in players:
+                    print("Player ", player)
+                    if player.id_torneig == tournament.id_torneig:
+                        tournaments_players.append(player)
+                print("Number of players:", len(tournaments_players))
+                t_length = int((len(tournaments_players))/2)
+                print("Number of pairings:", t_length)
+                for i in range(0, t_length):     
+                    if len(tournaments_players) >= 2:
+                        player1 = tournaments_players[0]
+                        player2 = tournaments_players[1]
+                        tournaments_players.remove(player1)
+                        tournaments_players.remove(player2)
+                        paired_players.append((player1, player2))
+                        await post_add_ronda(player1.id_jugador, player2.id_jugador, tournament.id_torneig, shared_session)
+                        print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}")
                 tournament.round += 1
             else:
                 await notify_tournament_players(tournament, 3)
@@ -249,6 +266,28 @@ async def periodic_get_request(shared_session):
 async def get_puntuacions(tournament_id,shared_session):
     global players
     url = BASE_URL + "puntuacions/get_by_tournament/" + str(tournament_id)
+    try:
+        async with shared_session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                for puntuacio in data:
+                    player_id = puntuacio["id_usuari"]
+                    if player_id in players:
+                        player = players[player_id]
+                        player.sos = puntuacio["sos"]
+                        player.victories = puntuacio["victories"]
+                        player.empat = puntuacio["empat"]
+                        player.derrotes = puntuacio["derrotes"]
+                        player.punts = puntuacio["punts"]
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+    except Exception as e:
+        print(f"Error during GET request: {e}")
+
+async def getPlayersBySos(tournament_id,shared_session):
+    global players
+    url = f"{BASE_URL}puntuacions/get_by_tournament_ordered/{tournament_id}"
     try:
         async with shared_session.get(url) as response:
             if response.status == 200:
