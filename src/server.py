@@ -263,7 +263,7 @@ async def periodic_get_request(shared_session):
 
 async def get_puntuacions(tournament_id,shared_session):
     global players
-    url = BASE_URL + "get_by_tournament/{puntuacio_id}?torneig_id="+tournament_id
+    url = BASE_URL + "puntuacions/get_by_tournament?tournament_id={tournament_id}"
     try:
         playersNoSos = []
         async with shared_session.get(url) as response:
@@ -284,6 +284,7 @@ async def get_puntuacions(tournament_id,shared_session):
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
+            return [] 
     except Exception as e:
         print(f"Error during GET request: {e}")
 
@@ -309,6 +310,7 @@ async def getPlayersBySos(tournament_id,shared_session):
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
+            return [] 
     except Exception as e:
         print(f"Error during GET request: {e}")
 
