@@ -179,9 +179,9 @@ async def make_parings(tournament):
                 print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}") 
         tournament.round += 1
     if tournament.round > 0:
-        print("ronda 2")
         if await getRondesAcabades(tournament.id_torneig, shared_session):
-            print("Rondes acabades")
+            print
+            
 
                 
 async def notify_tournament_players(tournament):
