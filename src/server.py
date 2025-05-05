@@ -279,7 +279,7 @@ async def get_puntuacions(tournament_id,shared_session):
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
                         playersNoSos.append(player)
-                
+                        print("Players without SOS:", playersNoSos)
                 return playersNoSos
             else:
                 error = await response.json()
