@@ -133,16 +133,16 @@ async def start_tournament():
     """
     Start the tournament if the number of players is sufficient.
     """
-    print("Checking tournaments...")
+    #print("Checking tournaments...")
     for id, tournament in dict_tournaments.items():
-        print("Checking tournament:", id)
+        #print("Checking tournament:", id)
         if tournament.check_number_of_players() and  tournament.status == "waiting":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
             await make_parings(tournament)
         elif tournament.round > 0:
             await make_parings(tournament)
-        print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
+        #print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
 async def make_parings(tournament):
     """
@@ -324,7 +324,7 @@ async def check_connections_and_notify():
     """
     while True:
         await start_tournament()
-        print("Checking connections...")
+        #print("Checking connections...")
         for tournament_id, tournament in dict_tournaments.items():
             await notify_tournament_players(tournament, 1)
         await asyncio.sleep(2)  # Check every 2 seconds
