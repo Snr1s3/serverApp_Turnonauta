@@ -266,6 +266,7 @@ async def get_puntuacions(tournament_id,shared_session):
     url = f"{BASE_URL}puntuacions/get_by_tournament/{tournament_id}"
     try:
         playersNoSos = []
+        print("Getting puntuacions for tournament:", tournament_id)
         async with shared_session.get(url) as response:
             if response.status == 200:
                 data = await response.json()
