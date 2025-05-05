@@ -155,11 +155,7 @@ async def make_parings(tournament):
     print(f"Creating pairings for tournament {tournament.id_torneig}")
     if tournament.round == 0:
         print("First round")
-        await get_puntuacions(tournament.id_torneig, shared_session)
-        for player in players:
-            print("Player ", player)
-            if player.id_torneig == tournament.id_torneig:
-                tournaments_players.append(player)
+        tournaments_players = await get_puntuacions(tournament.id_torneig, shared_session)
         print("Number of players:", len(tournaments_players))
         t_length = int((len(tournaments_players))/2)
         print("Number of pairings:", t_length)
@@ -183,12 +179,9 @@ async def make_parings(tournament):
         print ("Acabades: ", acabades)
         if acabades:
             if tournament.round < tournament.max_rounds:
+                paired_players = []
                 await notify_tournament_players(tournament, 2)
-                await getPlayersBySos(tournament.id_torneig, shared_session)
-                for player in players:
-                    print("Player ", player)
-                    if player.id_torneig == tournament.id_torneig:
-                        tournaments_players.append(player)
+                tournaments_players = await getPlayersBySos(tournament.id_torneig, shared_session)
                 print("Number of players:", len(tournaments_players))
                 t_length = int((len(tournaments_players))/2)
                 print("Number of pairings:", t_length)
@@ -272,6 +265,7 @@ async def get_puntuacions(tournament_id,shared_session):
     global players
     url = BASE_URL + "puntuacions/get_by_tournament/" + str(tournament_id)
     try:
+        playersNoSos = []
         async with shared_session.get(url) as response:
             if response.status == 200:
                 data = await response.json()
@@ -284,6 +278,9 @@ async def get_puntuacions(tournament_id,shared_session):
                         player.empat = puntuacio["empat"]
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
+                        playersNoSos.append(player)
+                
+                return playersNoSos
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
@@ -294,6 +291,7 @@ async def getPlayersBySos(tournament_id,shared_session):
     global players
     url = f"{BASE_URL}puntuacions/get_by_tournament_ordered/{tournament_id}"
     try:
+        playersSos = []
         async with shared_session.get(url) as response:
             if response.status == 200:
                 data = await response.json()
@@ -306,6 +304,8 @@ async def getPlayersBySos(tournament_id,shared_session):
                         player.empat = puntuacio["empat"]
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
+                        playersSos.append(player)
+                return playersSos
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
