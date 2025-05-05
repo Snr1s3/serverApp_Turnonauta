@@ -271,6 +271,7 @@ async def get_puntuacions(tournament_id,shared_session):
             if response.status == 200:
                 data = await response.json()
                 for puntuacio in data:
+                    print("Puntuacio:", puntuacio)
                     player_id = puntuacio["id_usuari"]
                     if player_id in players:
                         player = players[player_id]
