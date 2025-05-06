@@ -171,8 +171,8 @@ async def make_parings(tournament):
                 tournaments_players.remove(player1)
                 tournaments_players.remove(player2)
                 paired_players.append((player1, player2))
-                await post_add_ronda(player1.id_jugador, player2.id_jugador, tournament.id_torneig, shared_session)
-                print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}") 
+                await post_add_ronda(player1, player2, tournament.id_torneig, shared_session)
+                print(f"Paired players: {player1} and {player2}") 
         tournament.round += 1
     if tournament.round > 0:
         acabades = await getRondesAcabades(tournament.id_torneig, shared_session)
@@ -272,16 +272,8 @@ async def get_puntuacions(tournament_id, shared_session):
                 data = await response.json()
                 for puntuacio in data:
                     player_id = puntuacio["id_usuari"]
-                    player = next((p for p in players if p.id_jugador == player_id), None)
                     print("Player ID:", player_id)
-                    if player:
-                        # Update the player's attributes
-                        player.sos = puntuacio["sos"]
-                        player.victories = puntuacio["victories"]
-                        player.empat = puntuacio["empat"]
-                        player.derrotes = puntuacio["derrotes"]
-                        player.punts = puntuacio["punts"]
-                        playersNoSos.append(player)
+                    playersNoSos.append(player_id)
                 return playersNoSos
             else:
                 error = await response.json()
