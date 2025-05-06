@@ -173,6 +173,7 @@ async def make_parings(tournament):
                 paired_players.append((player1, player2))
                 await post_add_ronda(player1, player2, tournament.id_torneig, shared_session)
                 print(f"Paired players: {player1} and {player2}") 
+                await notify_tournament_players(tournament, 2)
         tournament.round += 1
     if tournament.round > 0:
         acabades = await getRondesAcabades(tournament.id_torneig, shared_session)
