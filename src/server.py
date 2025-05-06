@@ -271,19 +271,18 @@ async def get_puntuacions(tournament_id,shared_session):
             if response.status == 200:
                 data = await response.json()
                 for puntuacio in data:
-                    print("Puntuacio:", puntuacio)
                     player_id = puntuacio["id_usuari"]
-                    
-                    if player_id in players:
-                        print("Player ID found in players list:", player_id)
-                        player = players[player_id]
+                    player = next((p for p in players if p.id_jugador == player_id), None)
+                    print( "                 Player ID:", player_id)
+                    if player:
+                        # Update the player's attributes
                         player.sos = puntuacio["sos"]
                         player.victories = puntuacio["victories"]
                         player.empat = puntuacio["empat"]
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
                         playersNoSos.append(player)
-                        print("Players without SOS:", player)
+                print("Player ID:", playersNoSos[0])
                 return playersNoSos
             else:
                 error = await response.json()
@@ -302,14 +301,16 @@ async def getPlayersBySos(tournament_id,shared_session):
                 data = await response.json()
                 for puntuacio in data:
                     player_id = puntuacio["id_usuari"]
-                    if player_id in players:
-                        player = players[player_id]
+                    player = next((p for p in players if p.id_jugador == player_id), None)
+                    if player:
+                        # Update the player's attributes
                         player.sos = puntuacio["sos"]
                         player.victories = puntuacio["victories"]
                         player.empat = puntuacio["empat"]
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
                         playersSos.append(player)
+                    print("Player ID:", player)
                 return playersSos
             else:
                 error = await response.json()
