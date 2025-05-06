@@ -192,8 +192,8 @@ async def make_parings(tournament):
                         tournaments_players.remove(player1)
                         tournaments_players.remove(player2)
                         paired_players.append((player1, player2))
-                        await post_add_ronda(player1.id_jugador, player2.id_jugador, tournament.id_torneig, shared_session)
-                        print(f"Paired players: {player1.id_jugador} and {player2.id_jugador}")
+                        await post_add_ronda(player1, player2, tournament.id_torneig, shared_session)
+                        print(f"Paired players: {player1} and {player2}")
                 tournament.round += 1
             else:
                 await notify_tournament_players(tournament, 3)
