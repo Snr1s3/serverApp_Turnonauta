@@ -34,7 +34,7 @@ async def client(client_id):
 
 async def main():
     # Run 4 clients concurrently
-    tasks = [client(i) for i in range(2, 6)]
+    tasks = [client(i) for i in range(3, 6)]
     await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
