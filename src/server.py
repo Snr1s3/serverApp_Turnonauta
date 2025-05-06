@@ -293,16 +293,8 @@ async def getPlayersBySos(tournament_id,shared_session):
                 data = await response.json()
                 for puntuacio in data:
                     player_id = puntuacio["id_usuari"]
-                    player = next((p for p in players if p.id_jugador == player_id), None)
-                    if player:
-                        # Update the player's attributes
-                        player.sos = puntuacio["sos"]
-                        player.victories = puntuacio["victories"]
-                        player.empat = puntuacio["empat"]
-                        player.derrotes = puntuacio["derrotes"]
-                        player.punts = puntuacio["punts"]
-                        playersSos.append(player)
-                    print("Player ID:", player)
+                    print("Player ID:", player_id)
+                    playersSos.append(player_id)
                 return playersSos
             else:
                 error = await response.json()
