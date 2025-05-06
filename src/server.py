@@ -261,7 +261,7 @@ async def periodic_get_request(shared_session):
             print(f"Error during GET request: {e}")
         await asyncio.sleep(10)  # Fetch every 10 seconds
 
-async def get_puntuacions(tournament_id,shared_session):
+async def get_puntuacions(tournament_id, shared_session):
     global players
     url = f"{BASE_URL}puntuacions/get_by_tournament/{tournament_id}"
     try:
@@ -273,7 +273,7 @@ async def get_puntuacions(tournament_id,shared_session):
                 for puntuacio in data:
                     player_id = puntuacio["id_usuari"]
                     player = next((p for p in players if p.id_jugador == player_id), None)
-                    print( "                 Player ID:", player_id)
+                    print("Player ID:", player_id)
                     if player:
                         # Update the player's attributes
                         player.sos = puntuacio["sos"]
@@ -282,14 +282,14 @@ async def get_puntuacions(tournament_id,shared_session):
                         player.derrotes = puntuacio["derrotes"]
                         player.punts = puntuacio["punts"]
                         playersNoSos.append(player)
-                print("Player ID:", playersNoSos[0])
                 return playersNoSos
             else:
                 error = await response.json()
                 print(f"Failed: {response.status}, {error}")
-            return [] 
     except Exception as e:
         print(f"Error during GET request: {e}")
+    # Ensure the function always returns a list
+    return []
 
 async def getPlayersBySos(tournament_id,shared_session):
     global players
