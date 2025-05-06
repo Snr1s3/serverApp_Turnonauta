@@ -179,6 +179,7 @@ async def make_parings(tournament):
         print ("Acabades: ", acabades)
         if acabades:
             if tournament.round < tournament.max_rounds:
+                print("Seguent ronda")
                 paired_players = []
                 await notify_tournament_players(tournament, 2)
                 tournaments_players = await getPlayersBySos(tournament.id_torneig, shared_session)
