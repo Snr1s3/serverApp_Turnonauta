@@ -200,6 +200,18 @@ async def make_parings(tournament):
             else:
                 await notify_tournament_players(tournament, 3)
                 tournament.status = "finished"
+                for player in players:  
+                    if player.id_torneig == tournament.id_torneig:
+                        try:
+                            print(f"Notified player {player.id_jugador} about tournament end.")
+                            player.writer.close()
+                        except (ConnectionResetError, BrokenPipeError):
+                            print(f"Failed to notify player {player.id_jugador}.")
+                        tournament.players.remove(player)
+                        players.remove(player)
+                        print(f"Player {player.id_jugador} removed from tournament {tournament.id_torneig}.")
+
+                print(f"All players disconnected from tournament {tournament.id_torneig}.")
             
 
                 
