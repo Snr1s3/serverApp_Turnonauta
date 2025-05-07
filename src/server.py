@@ -231,8 +231,7 @@ async def notify_tournament_players(tournament,code):
         try:
 
             num = await player.send_message(notification)
-            if tournament.status == "finished":
-                await player.send_message(f"3.{tournament.id_torneig}.end\n")
+            
             if num == 1:
                 print(f"Failed to send message to player {player.id_jugador}. Removing from tournament.")
                 await remove_disconnected_player(player, tournament)
