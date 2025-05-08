@@ -154,26 +154,22 @@ async def make_parings(tournament):
     paired_players = []
     print(f"Creating pairings for tournament {tournament.id_torneig}")
     if tournament.round == 0:
-        print("First round")
-        tournaments_players = await get_puntuacions(tournament.id_torneig, shared_session)
+        print("Seguent ronda")
+        paired_players = []
+        await notify_tournament_players(tournament, 2)
+        tournaments_players = await getPlayersBySos(tournament.id_torneig, shared_session)
         print("Number of players:", len(tournaments_players))
         t_length = int((len(tournaments_players))/2)
         print("Number of pairings:", t_length)
         for i in range(0, t_length):     
             if len(tournaments_players) >= 2:
-                index1 = random.randint(0, len(tournaments_players) - 1)
-                index2 = random.randint(0, len(tournaments_players) - 1)
-                while index1 == index2: 
-                    index2 = random.randint(0, len(tournaments_players) - 1)
-
-                player1 = tournaments_players[index1]
-                player2 = tournaments_players[index2]
+                player1 = tournaments_players[0]
+                player2 = tournaments_players[1]
                 tournaments_players.remove(player1)
                 tournaments_players.remove(player2)
                 paired_players.append((player1, player2))
                 await post_add_ronda(player1, player2, tournament.id_torneig, shared_session)
-                print(f"Paired players: {player1} and {player2}") 
-                await notify_tournament_players(tournament, 2)
+                print(f"Paired players: {player1} and {player2}")
         tournament.round += 1
     if tournament.round > 0:
         acabades = await getRondesAcabades(tournament.id_torneig, shared_session)
