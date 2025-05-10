@@ -113,6 +113,41 @@ Aquest fitxer conté la implementació del servidor principal per gestionar els 
 - **Servidor principal**:
   - **`main`**: Configura i inicia el servidor, executant les tasques periòdiques i gestionant les connexions dels clients.
 
+
+## src/client.py
+
+Aquest fitxer conté un client asíncron que simula jugadors connectant-se al servidor. És útil per provar el comportament del servidor i verificar la gestió de connexions i missatges.
+
+### Funcionalitats principals
+
+- **Connexió al servidor**:
+  - El client es connecta al servidor utilitzant l'adreça IP i el port configurats.
+  - Envia un missatge inicial amb el format: `0.{tournament_id}.{player_id}.player{player_id}`.
+
+- **Simulació de jugadors actius**:
+  - El client envia missatges periòdics de "KEEP_ALIVE" per mantenir la connexió oberta.
+  - Rep i mostra les respostes del servidor.
+
+- **Gestió de connexions**:
+  - Gestiona la desconnexió del servidor o del client de manera controlada.
+
+### Configuració
+
+- **HOST**: `52.20.160.197` (IP del servidor).
+- **PORT**: `8444` (port del servidor).
+
+### Funcions principals
+
+- **`client(client_id)`**  
+  Simula un jugador connectant-se al servidor.  
+  - Envia un missatge inicial amb l'ID del torneig i del jugador.
+  - Manté la connexió activa enviant missatges de "KEEP_ALIVE".
+  - Mostra les respostes rebudes del servidor.
+
+- **`main()`**  
+  Crea múltiples clients per simular diversos jugadors connectats alhora.  
+  - En aquest exemple, es creen clients amb els IDs `3`, `4` i `5`.
+
 ## src/models/Torneig.py && src/models/Jugador.py 
 La carpeta `models` conté les classes que representen les entitats principals del sistema, com ara jugadors i tornejos. Aquestes classes encapsulen la lògica i les dades necessàries per gestionar aquestes entitats.
 
