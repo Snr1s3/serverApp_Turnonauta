@@ -10,7 +10,11 @@ class Jugador:
         self.punts = 0
         self.writer = writer
 
+    
     async def send_message(self, message):
+        """
+        Enviar missatge al jugador
+        """
         try:
             self.writer.write(message.encode())
             await self.writer.drain()
@@ -20,4 +24,7 @@ class Jugador:
     
 
     def __str__(self):
+        """
+        TO STRING
+        """
         return f"Jugador(id_jugador={self.id_jugador}, id_torneig={self.id_torneig}, nom={self.nom})"

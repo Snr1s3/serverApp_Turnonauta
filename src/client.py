@@ -5,6 +5,8 @@ HOST = '52.20.160.197'
 PORT = 8444    
 
 async def client(client_id):
+    """
+    Crear clients per simular jugadors actius"""
     reader, writer = await asyncio.open_connection(HOST, PORT)
     tournament_id = "5"
     player_id = client_id
@@ -21,7 +23,6 @@ async def client(client_id):
                 break
             print(f"Received: {response.decode()}")
 
-            # Send a keep-alive message every 10 seconds
             await asyncio.sleep(10)
             writer.write(b"KEEP_ALIVE\n")
             await writer.drain()
@@ -33,7 +34,6 @@ async def client(client_id):
         await writer.wait_closed()
 
 async def main():
-    # Run 4 clients concurrently
     tasks = [client(i) for i in range(3, 6)]
     await asyncio.gather(*tasks)
 

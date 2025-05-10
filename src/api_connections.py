@@ -2,10 +2,31 @@ import aiohttp
 
 BASE_URL = "https://turnonauta.asegura.dev:8443/"
 
+async def getPlayersBySos(tournament_id,shared_session):
+    """
+    Fetch jugadors per SOS
+    """
+    url = f"{BASE_URL}puntuacions/get_by_tournament_ordered/{tournament_id}"
+    try:
+        playersSos = []
+        async with shared_session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
+                for puntuacio in data:
+                    player_id = puntuacio["id_usuari"]
+                    print("Player ID:", player_id)
+                    playersSos.append(player_id)
+                return playersSos
+            else:
+                error = await response.json()
+                print(f"Failed: {response.status}, {error}")
+            return [] 
+    except Exception as e:
+        print(f"Error during GET request: {e}")
 
 async def getRondesAcabades(tournament_id,shared_session):
     """
-    Perform a GET request to the server to retrieve finished rounds for a tournament.
+    Fetch rondes acabades
     """
     url = f"{BASE_URL}rondes/ronda_acabada?torneig_id={tournament_id}"
     try:
@@ -26,7 +47,7 @@ async def getRondesAcabades(tournament_id,shared_session):
 
 async def post_add_puntuacio(user_id, tournament_id,shared_session):
     """
-    Perform a POST request to the server to add a new puntuacio.
+    Post de puntuacions
     """
     url = BASE_URL + "puntuacions/add"
     payload = {
@@ -52,7 +73,7 @@ async def post_add_puntuacio(user_id, tournament_id,shared_session):
         
 async def post_add_ronda(id_jugador1, id_jugador2, tournament_id,shared_session):
     """
-    Perform a POST request to the server to add a new puntuacio.
+    Post de rondes
     """
     url = BASE_URL + "rondes/add"
     payload = {
@@ -75,7 +96,7 @@ async def post_add_ronda(id_jugador1, id_jugador2, tournament_id,shared_session)
 
 async def delete_puntuacions_tournament(tournament_id,shared_session):
     """
-    Perform a DELETE request to the server to remove all puntuacions for a tournament.
+    Eliminar puntuacions d'un torneig
     """
     print(f"Deleting puntuacions for tournament {tournament_id}")
     url = f"{BASE_URL}puntuacions/delete_puntuacions_tournament/{tournament_id}"
@@ -93,7 +114,7 @@ async def delete_puntuacions_tournament(tournament_id,shared_session):
 
 async def delete_puntuacions_user(user_id, tournament_id,shared_session):
     """
-    Perform a DELETE request to the server to remove all puntuacions for a user in a tournament.
+    Eliminar puntuacions d'un jugador
     """
     
     url = f"{BASE_URL}puntuacions/delete_by_user/{user_id}/{tournament_id}"

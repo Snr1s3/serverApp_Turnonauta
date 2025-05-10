@@ -5,35 +5,36 @@ from models.Jugador import Jugador
 from models.Torneig import Torneig
 from api_connections import (
     post_add_puntuacio,
+    getPlayersBySos,
     delete_puntuacions_tournament,
     post_add_ronda,
     getRondesAcabades,
     delete_puntuacions_user,
 )
 
-# Server configuration
+# SERVIDOR
 HOST = '0.0.0.0'
 PORT = 8444
 BASE_URL = "https://turnonauta.asegura.dev:8443/"
 
-# Global variables
+# VARIABLES GLOBALS
 shared_session = None
-dict_tournaments = {}  # Stores all tournaments
-players = []  # Stores all players
+dict_tournaments = {}  
+players = []  
 
 
-# -------------------- Utility Functions --------------------
+# -------------------- Utility --------------------
 
 def is_player_registered(player_id):
     """
-    Check if a player is already registered in any tournament.
+    Mirar si un jugador ja està registrat en un torneig.
     """
     return any(player_id in tournament.players for tournament in dict_tournaments.values())
 
 
 def create_tournament(tournament_id, max_players, format):
     """
-    Create a new tournament and add it to the global dictionary.
+    Crear un torneig.
     """
     if tournament_id not in dict_tournaments:
         dict_tournaments[tournament_id] = Torneig(tournament_id, max_players, format)
@@ -44,7 +45,7 @@ def create_tournament(tournament_id, max_players, format):
 
 def print_tournaments():
     """
-    Print all tournaments and their players.
+    Print dels tornejos actius.
     """
     print("\nCurrent Tournaments:")
     for tournament in dict_tournaments.values(): 
@@ -55,7 +56,7 @@ def print_tournaments():
 
 async def send_error_message(writer, message):
     """
-    Send an error message to the client and close the connection.
+   Enviar missatge d'error al client.
     """
     writer.write(message.encode())
     await writer.drain()
@@ -63,25 +64,22 @@ async def send_error_message(writer, message):
     await writer.wait_closed()
 
 
-# -------------------- Client Handling --------------------
+# -------------------- Clients Handling --------------------
 
 async def handle_client(reader, writer):
     """
-    Handle incoming client connections.
+    Handle connexions dels clients.
     """
     global shared_session
     addr = writer.get_extra_info('peername')
     print(f"Connection from {addr}")
 
     try:
-        # Read and parse the client message
         data = await reader.read(100)
         message = data.decode().strip()
         print(f"Received: {message} from {addr}")
-
         codi, tournament_id, player_id, player_name = parse_client_message(message)
 
-        # Register the player
         await register_player(tournament_id, player_id, player_name, writer)
 
     except ValueError as e:
@@ -90,7 +88,7 @@ async def handle_client(reader, writer):
 
 def parse_client_message(message):
     """
-    Parse the client message and extract relevant information.
+    Parsejar el missatge del client.
     """
     try:
         codi, tournament_id, player_id, player_name = message.split(".")
@@ -102,51 +100,43 @@ def parse_client_message(message):
 
 async def register_player(tournament_id, player_id, player_name, writer):
     """
-    Register a player in a tournament.
+    Registrar un jugador en un torneig.
     """
     global shared_session
 
-    # Check if the tournament exists
     if tournament_id not in dict_tournaments:
         await send_error_message(writer, "Invalid Tournament.\n")
         return
 
-    # Check if the player is already registered
     if is_player_registered(player_id):
         await send_error_message(writer, "Player ID already registered in another tournament.\n")
         return
 
-    # Get the tournament and add the player
     tournament = dict_tournaments[tournament_id]
     player = Jugador(player_id, tournament_id, player_name, writer)
     players.append(player)
     tournament.add_player(player)
 
-    # Notify all players in the tournament
     await notify_tournament_players(tournament,1)
 
-    # Add the player's puntuacions
     await post_add_puntuacio(player.id_jugador, player.id_torneig, shared_session)
     print_tournaments()
 
 async def start_tournament():
     """
-    Start the tournament if the number of players is sufficient.
+    Començar el torneig.
     """
-    #print("Checking tournaments...")
     for id, tournament in dict_tournaments.items():
-        #print("Checking tournament:", id)
         if tournament.check_number_of_players() and  tournament.status == "waiting":
             print(f"Tournament {tournament.id_torneig} is ready to start.")
             tournament.status = "started"
             await make_parings(tournament)
         elif tournament.round > 0:
             await make_parings(tournament)
-        #print(f"Tournament {tournament.id_torneig} status: {tournament.status}")
     
 async def make_parings(tournament):
     """
-    Create pairings for the tournament.
+    Fer els emparellaments per al torneig.
     """
     global players
     global shared_session
@@ -215,7 +205,7 @@ async def make_parings(tournament):
                 
 async def notify_tournament_players(tournament,code):
     """
-    Notify all players in a tournament about the current player list.
+    Notifiacar jugaors en un torneig.
     """
     player_names = [p.nom for p in tournament.players]
     if code == 1:
@@ -240,18 +230,18 @@ async def notify_tournament_players(tournament,code):
 
 async def remove_disconnected_player(player, tournament):
     """
-    Remove a disconnected player from the tournament and global players list.
+    Elimina jugador desconectat del torneig.
     """
     tournament.players.remove(player)
     players.remove(player)
     await delete_puntuacions_user(player.id_jugador, tournament.id_torneig, shared_session)
 
 
-# -------------------- Periodic Tasks --------------------
+# -------------------- Tasques periodiques --------------------
 
 async def periodic_get_request(shared_session):
     """
-    Periodically fetch active tournaments and save them to dict_tournaments.
+    Fetch tornejos actius
     """
     url = BASE_URL + "tournaments/active"
     while True:
@@ -268,68 +258,26 @@ async def periodic_get_request(shared_session):
                     print(f"Failed to fetch data. Status: {response.status}")
         except Exception as e:
             print(f"Error during GET request: {e}")
-        await asyncio.sleep(10)  # Fetch every 10 seconds
+        await asyncio.sleep(10)
 
-async def get_puntuacions(tournament_id, shared_session):
-    global players
-    url = f"{BASE_URL}puntuacions/get_by_tournament/{tournament_id}"
-    try:
-        playersNoSos = []
-        print("Getting puntuacions for tournament:", tournament_id)
-        async with shared_session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                for puntuacio in data:
-                    player_id = puntuacio["id_usuari"]
-                    print("Player ID:", player_id)
-                    playersNoSos.append(player_id)
-                return playersNoSos
-            else:
-                error = await response.json()
-                print(f"Failed: {response.status}, {error}")
-    except Exception as e:
-        print(f"Error during GET request: {e}")
-    # Ensure the function always returns a list
-    return []
 
-async def getPlayersBySos(tournament_id,shared_session):
-    global players
-    url = f"{BASE_URL}puntuacions/get_by_tournament_ordered/{tournament_id}"
-    try:
-        playersSos = []
-        async with shared_session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                for puntuacio in data:
-                    player_id = puntuacio["id_usuari"]
-                    print("Player ID:", player_id)
-                    playersSos.append(player_id)
-                return playersSos
-            else:
-                error = await response.json()
-                print(f"Failed: {response.status}, {error}")
-            return [] 
-    except Exception as e:
-        print(f"Error during GET request: {e}")
 
 async def check_connections_and_notify():
     """
-    Periodically check player connections and notify players in tournaments.
+    Verifica la connexió dels jugadors i notifica els tornejos.
     """
     while True:
         await start_tournament()
-        #print("Checking connections...")
         for tournament_id, tournament in dict_tournaments.items():
             await notify_tournament_players(tournament, 1)
-        await asyncio.sleep(2)  # Check every 2 seconds
+        await asyncio.sleep(2)  
 
 
-# -------------------- Main Entry Point --------------------
+# -------------------- Main --------------------
 
 async def main():
     """
-    Main entry point for the server.
-    Starts the server, periodic GET request, and connection checking tasks.
+    Funcion principal del servidor.
     """
     global shared_session
     shared_session = aiohttp.ClientSession()
@@ -339,7 +287,7 @@ async def main():
         addr = server.sockets[0].getsockname()
         print(f"Server running on {addr}")
 
-        # Start periodic tasks
+        # Tasques periodiques
         asyncio.create_task(periodic_get_request(shared_session))
         asyncio.create_task(check_connections_and_notify())
 
