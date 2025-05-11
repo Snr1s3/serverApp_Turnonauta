@@ -1,11 +1,12 @@
 # SERVER APP TURNONAUTA
 
-> **Altres Repositoris del Projecte**
->- [API](https://github.com/Snr1s3/TurnoNauta_FastAPI.git)
->- [MOBIL](https://github.com/Snr1s3/Turnonauta.git)
->- [WEB](https://github.com/EdwindanielTIC/web_TurnoNauta.git)
+**Altres Repositoris del Projecte**    
+[API](https://github.com/Snr1s3/TurnoNauta_FastAPI.git)    
+[MOBIL](https://github.com/Snr1s3/Turnonauta.git)    
+[WEB](https://github.com/EdwindanielTIC/web_TurnoNauta.git)  
 
 
+## Estructura de Directoris
 ![Estructura de Directoris](./img/image.png)
 
 ## requeriments.txt
