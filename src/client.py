@@ -8,7 +8,7 @@ async def client(client_id):
     """
     Crear clients per simular jugadors actius"""
     reader, writer = await asyncio.open_connection(HOST, PORT)
-    tournament_id = "5"
+    tournament_id = "9"
     player_id = client_id
     message = f"0.{tournament_id}.{player_id}.player{player_id}"
     print(f"Sending: {message}")
@@ -34,7 +34,7 @@ async def client(client_id):
         await writer.wait_closed()
 
 async def main():
-    tasks = [client(i) for i in range(3, 6)]
+    tasks = [client(i) for i in range(5, 6)]
     await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
