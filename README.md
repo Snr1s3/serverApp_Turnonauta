@@ -5,7 +5,7 @@
 [MOBIL](https://github.com/Snr1s3/Turnonauta.git)    
 [WEB](https://github.com/EdwindanielTIC/web_TurnoNauta.git)  
 
-## Iniciar l'APIREST
+## Iniciar el Servidor
 ```bash
 source serverApp_Turnonauta/venv/bin/activate
 python3 serverApp_Turnonauta/src/server.py
