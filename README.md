@@ -4,6 +4,8 @@
 [API](https://github.com/Snr1s3/TurnoNauta_FastAPI.git)    
 [MOBIL](https://github.com/Snr1s3/Turnonauta.git)    
 [WEB](https://github.com/EdwindanielTIC/web_TurnoNauta.git)  
+[Presentacio](https://docs.google.com/presentation/d/1K03l9CcSwC65fDLJo3RcBxfwdepAkTG-f7iyhe_hQaQ/edit?usp=sharing)
+[Memoria](https://docs.google.com/document/d/1RH_1SOikwa-qEJ7z6mxCnpTQ9W4fVT4ch-nEfXnbZEM/edit?usp=sharing)
 
 ## Iniciar el Servidor
 ```bash
