@@ -7,6 +7,8 @@
 - [Presentacio](https://docs.google.com/presentation/d/1K03l9CcSwC65fDLJo3RcBxfwdepAkTG-f7iyhe_hQaQ/edit?usp=sharing)
 - [Memoria](https://docs.google.com/document/d/1RH_1SOikwa-qEJ7z6mxCnpTQ9W4fVT4ch-nEfXnbZEM/edit?usp=sharing)
 - [Serveis](https://docs.google.com/document/d/1n_anFcwDCupWzFK5bXRM0LBsKA6eEZFOU3CXILnUGAA/edit?usp=sharing)
+- [Xarxa](https://docs.google.com/document/u/1/d/1IixhdCwdaTFHPpAbhsbOggPLPOhEX2qqRQvovPE8Qjs/edit)
+- [Figma Web i Mobil](https://www.figma.com/design/YJADTNGPxmaDTsaLZH9QjL/TURNONAUTA?node-id=56-240&t=mZNEIxUULfeA7GOE-1)
 
 ## Iniciar el Servidor
 ```bash
